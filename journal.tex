@@ -50,14 +50,6 @@
 
 
 \documentclass[journal]{IEEEtran}
-%
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[journal]{../sty/IEEEtran}
-
-
-
-
 
 % Some very useful LaTeX packages include:
 % (uncomment the ones you want to load)
@@ -82,10 +74,6 @@
 % have to be run twice to clear warning/error messages.
 
 
-
-
-
-
 % *** CITATION PACKAGES ***
 %
 %\usepackage{cite}
@@ -105,30 +93,26 @@
 % The documentation is contained in the cite.sty file itself.
 
 
-
-
-
-
 % *** GRAPHICS RELATED PACKAGES ***
 %
-\ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../pdf/}{../jpeg/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
-\else
-  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
-  % will default to the driver specified in the system graphics.cfg if no
-  % driver is specified.
-  % \usepackage[dvips]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../eps/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.eps}
-\fi
+%\ifCLASSINFOpdf
+%  \usepackage[pdftex]{graphicx}
+%  % declare the path(s) where your graphic files are
+%  \graphicspath{/figures}
+%  % and their extensions so you won't have to specify these with
+%  % every instance of \includegraphics
+%  \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+%\else
+%%   or other class option (dvipsone, dvipdf, if not using dvips). graphicx
+%%   will default to the driver specified in the system graphics.cfg if no
+%%   driver is specified.
+%   \usepackage[dvips]{graphicx}
+%%   declare the path(s) where your graphic files are
+%   \graphicspath{{../eps/}}
+%%   and their extensions so you won't have to specify these with
+%%   every instance of \includegraphics
+%   \DeclareGraphicsExtensions{.eps}
+%\fi
 % graphicx was written by David Carlisle and Sebastian Rahtz. It is
 % required if you want graphics, photos, etc. graphicx.sty is already
 % installed on most LaTeX systems. The latest version and documentation
@@ -150,30 +134,24 @@
 % http://www.tug.org/applications/pdftex
 
 
-
-
-
 % *** MATH PACKAGES ***
 %
-%\usepackage{amsmath}
+\usepackage{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
 %
 % Note that the amsmath package sets \interdisplaylinepenalty to 10000
 % thus preventing page breaks from occurring within multiline equations. Use:
-%\interdisplaylinepenalty=2500
+\interdisplaylinepenalty=2500
 % after loading amsmath to restore such page breaks as IEEEtran.cls normally
 % does. amsmath.sty is already installed on most LaTeX systems. The latest
 % version and documentation can be obtained at:
 % http://www.ctan.org/pkg/amsmath
 
 
-
-
-
 % *** SPECIALIZED LIST PACKAGES ***
 %
-%\usepackage{algorithmic}
+\usepackage{algorithmic}
 % algorithmic.sty was written by Peter Williams and Rogerio Brito.
 % This package provides an algorithmic environment fo describing algorithms.
 % You can use the algorithmic environment in-text or within a figure
@@ -189,11 +167,9 @@
 % http://www.ctan.org/pkg/algorithmicx
 
 
-
-
 % *** ALIGNMENT PACKAGES ***
 %
-%\usepackage{array}
+\usepackage{array}
 % Frank Mittelbach's and David Carlisle's array.sty patches and improves
 % the standard LaTeX2e array and tabular environments to provide better
 % appearance and additional user controls. As the default LaTeX2e table
@@ -208,8 +184,6 @@
 % IEEEtran contains the IEEEeqnarray family of commands that can be used to
 % generate multiline equations as well as matrices, tables, etc., of high
 % quality.
-
-
 
 
 % *** SUBFIGURE PACKAGES ***
@@ -234,8 +208,6 @@
 %
 % The latest version and documentation of subfig.sty can be obtained at:
 % http://www.ctan.org/pkg/subfig
-
-
 
 
 % *** FLOAT PACKAGES ***
@@ -278,11 +250,9 @@
 % Instead, use Morten Hogholm'a dblfloatfix which combines the features
 % of both fixltx2e and stfloats:
 %
-% \usepackage{dblfloatfix}
+\usepackage{dblfloatfix}
 % The latest version can be found at:
 % http://www.ctan.org/pkg/dblfloatfix
-
-
 
 
 %\ifCLASSOPTIONcaptionsoff
@@ -324,8 +294,6 @@
 % page by themselves.
 
 
-
-
 % *** PDF, URL AND HYPERLINK PACKAGES ***
 %
 %\usepackage{url}
@@ -334,9 +302,6 @@
 % systems. The latest version and documentation can be obtained at:
 % http://www.ctan.org/pkg/url
 % Basically, \url{my_url_here}.
-
-
-
 
 % *** Do not adjust lengths that control margins, column widths, etc. ***
 % *** Do not use packages that alter fonts (such as pslatex).         ***
@@ -357,7 +322,8 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Gabor-filter-based Complex Color feature space}
+\title{Gabor-filter-based Complex Color Feature Space}
+%\title{Multi-spectral Color Image Representation}
 %
 %
 % author names and IEEE memberships
@@ -371,14 +337,10 @@
 
 \author{Eric~Bazán,~%~\IEEEmembership{Member,~IEEE,}
         Petr~Dokladál,~%,~\IEEEmembership{Fellow,~OSA}
-        and~Eva~Dokladálová}% <-this % stops a space ,~\IEEEmembership{Life~Fellow,~IEEE
-
-% Modify adscriptions        
-%\thanks{M. Shell was with the Department
-%of Electrical and Computer Engineering, Georgia Institute of Technology, Atlanta,
-%GA, 30332 USA e-mail: (see http://www.michaelshell.org/contact.html).}% <-this % stops a space
-%\thanks{J. Doe and J. Doe are with Anonymous University.}% <-this % stops a space
-%\thanks{Manuscript received April 19, 2005; revised August 26, 2015.}}
+        and~Eva~Dokladálová% <-this % stops a space ,~\IEEEmembership{Life~Fellow,~IEEE}
+\thanks{E. Bazán and P. Dokladál are with the PSL Research University - MINES Paris, CMM - Center for Mathematical Morphology, Mathematics and Systems, 35, rue St. Honor\'{e}, 77305, Fontainebleau Cedex (e-mail: \{eric.bazan, petr.dokladal\}@mines-paristech.fr).}% <-this % stops a space
+\thanks{E. Dokladálová is with the University Gustave Eiffel, LIGM, UMR 8049, ESIEE Paris, Cité Descartes B.P.99, 93162, Noisy le Grand Cedex, France (e-mail: eva.dokladalova@esiee.fr).}}% <-this % stops a space
+%%\thanks{Manuscript received April 19, 2005; revised August 26, 2015.}}
 
 % note the % following the last \IEEEmembership and also \thanks - 
 % these prevent an unwanted space from occurring between the last author name
@@ -399,7 +361,6 @@
 % space somehow managed to creep in.
 
 
-
 % The paper headers
 %\markboth{Journal of \LaTeX\ Class Files,~Vol.~14, No.~8, August~2015}%
 %{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for IEEE Journals}
@@ -412,8 +373,6 @@
 % you desire.
 
 
-
-
 % If you want to put a publisher's ID mark on the page you can do it like
 % this:
 %\IEEEpubid{0000--0000/00\$00.00~\copyright~2015 IEEE}
@@ -421,11 +380,8 @@
 % column for its text to clear the IEEEpubid mark.
 
 
-
 % use for special paper notices
 %\IEEEspecialpapernotice{(Invited Paper)}
-
-
 
 
 % make the title area
@@ -439,12 +395,8 @@ The abstract goes here.
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-IEEE, IEEEtran, journal, \LaTeX, paper, template.
+Gabor filter, multi-spectral decomposition, image representation, image contours, image segmentation, high-level texture features.
 \end{IEEEkeywords}
-
-
-
-
 
 
 % For peer review papers, you can put extra information on the cover
@@ -684,9 +636,9 @@ The conclusion goes here.
 % http://mirror.ctan.org/biblio/bibtex/contrib/doc/
 % The IEEEtran BibTeX style support page is at:
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
-\bibliographystyle{IEEEtran}
+%\bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
-\bibliography{biblio}
+%\bibliography{biblio}
 %
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
