@@ -890,6 +890,109 @@ Figure \ref{fig:2d_filterbank_spacing} shows the octave spacing and the orientat
 
 
 \section{Complex Color Space}
+Color spaces mostly map the perception of color as a three-dimensional property. However, these dimensions can be encompassed in only two aspects; therefore, we can classify them into luminance-chromaticity and luminance-chrominance color spaces. In both cases, luminance is the property that describes the brightness of the light; however, both categories have different ways of defining color. Chromaticity-based spaces define color independently of luminance (or the luminance equivalent in a particular color space). In a chrominance-based space, the chrominance values of the image change as the light intensity varies.
+  
+We can obtain a color space based on chromaticity from the classic trichromatic models described in the previous section. The chromaticity of these models consists mainly of two independent parameters. For example, the $xyY$ color space, from which we obtain the CIE chromaticity chart (see figure \ref{fig:chrom_diagram}), uses the X and Y dimensions to calculate chromaticity. In RGB space, it is possible to obtain a space based on chromaticity following the same principle, using only the R and G channels for its calculation. For cylindrical color spaces (HSV, HSL), the independent parameters that describe the chromaticity are hue and colorfulness (saturation) dimensions.
+
+\begin{figure}[!ht] 
+	\centering
+	\begin{subfigure}[b]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{lab_complex_color}
+		\caption{}	
+		\label{fig:lab_complex_color}
+	\end{subfigure}
+	~%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{hsl_complex_color}
+		\caption{}	
+		\label{fig:hsl_complex_color}
+	\end{subfigure}
+	~%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{hsv_complex_color}
+		\caption{ }	
+		\label{fig:hsv_complex_color}
+	\end{subfigure}
+	
+	\caption{Graphic display of tree alternatives to obtain the complex color representation of an image: \captext{(a)} form LAB color space, \captext{(b)} from form HSL color space, and \captext{(c)} from HSV color space.}
+	\label{fig:complex_color_spaces}
+\end{figure}
+
+The chromaticity-based models are reputed for their use in image editing and color correction. However, the chrominance-based spaces are helpful if we are looking for a uniform distribution of the color information in an image. Some examples of color spaces in this category are CIELAB and CIELUV. In them, the colorfulness information of an image is found in channels A and B (resp. U and V), and the final color is defined by the brightness of the light defined by the luminance L.
+
+The use of spaces based on luminance-chrominance reduces the dimensionality of the color to two channels $L$ and $C$.To make this two-channel color representation possible, we combine the values of channels A and B with the chrominance function.
+\begin{equation}\label{eq:chrominance_lab}
+    C = A + \mathsf{i}B
+\end{equation}
+
+In the same way, it is possible to obtain a luminance-chrominance color space using the dimensions of the cylindrical HSV/HSL color spaces. In that case, the hue H and saturation S channels describe the chrominance such that the function
+\begin{equation}\label{eq:chrominance_hsv}
+    C = S \mathsf{e}^{\mathsf{i}H}
+\end{equation}
+defines the complex chrominance channel.
+
+These representations have the advantage of reducing the dimensionality of the color information. In image processing, we can obtain these color spaces from the transformation of the image from the RGB space to the LAB, HSV, and HSL spaces, from which we get the chrominance variables and, consequently, the complex chrominance channel. Regarding the luminance, it may differ depending on the input color space. For example, for the LAB and HSL spaces, this variable is naturally defined; however, in the HSV space, the luminance channel is obtained from transforming the RGB input image to a grayscale image. Figure \ref{fig:complex_color_spaces} shows the diagrams for obtaining an image represented in two channels.
+
+%\begin{figure}[!ht]
+%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{35pt}{ \rotatebox[origin=c]{90}{\captext{Input image}} }}%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras}
+%    \end{subfigure} \\    
+%     
+%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{\captext{HSV luma/chroma}} }}%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_HSV}
+%    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+%    \begin{subfigure}[b]{0.3\textwidth}
+%        \includegraphics[width=\textwidth]{araras_chrr_HSV}
+%    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+%    \begin{subfigure}[b]{0.3\textwidth}
+%        \includegraphics[width=\textwidth]{araras_chri_HSV}
+%    \end{subfigure} \vspace{5pt}      
+%    
+%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{\captext{HSL luma/chroma}} }}%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_HLS}
+%    \end{subfigure}     
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+%    \begin{subfigure}[b]{0.3\textwidth}
+%        \includegraphics[width=\textwidth]{araras_chrr_HLS}
+%    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+%    \begin{subfigure}[b]{0.3\textwidth}
+%        \includegraphics[width=\textwidth]{araras_chri_HLS}
+%    \end{subfigure} \vspace{5pt} 
+%    
+%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{\captext{LAB luma/chroma}} }}%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_LAB}
+%    \end{subfigure}     
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+%    \begin{subfigure}[b]{0.3\textwidth}
+%        \includegraphics[width=\textwidth]{araras_chrr_LAB}
+%    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+%    \begin{subfigure}[b]{0.3\textwidth}
+%        \includegraphics[width=\textwidth]{araras_chri_LAB}
+%    \end{subfigure} \vspace{5pt} 
+%        
+%    \caption{Color channels of an image in different color spaces in grayscale.}\label{fig:images_color_complex_space}    
+%\end{figure}
+
+%Figure \ref{fig:images_color_complex_space} shows the transformation of a natural image (first row of the figure array) from RGB space to complex two-channel color space. Each row in the figure shows the luminance channel and the two parts (real and imaginary) of the chrominance channel. Note that as it happened in the representation of the classic color spaces (figure \ref{fig:images_color_space}) since the method to compute saturation differs in HSV and HSL spaces, the chrominance channel is different. The same effect occurs with the L luminance channel from LAB space and the luminance from the RGB to gray transformation; in theory, both are the same, but we can see differences in practice.
 
 \section{The Gabor-filter-based Complex Color Feature Space}
 \subsection{Feature Space Validation}
