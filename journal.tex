@@ -140,6 +140,7 @@
 \usepackage{amsmath}
 \newcommand{\RE}{\mathrm{Re}}
 \newcommand{\IM}{\mathrm{Im}}
+\usepackage{mathtools,amssymb,lipsum, nccmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
 %
@@ -1753,126 +1754,429 @@ Finally, looking at subfigures \ref{fig:perceptual_color1_synth} and \ref{fig:pe
     \caption{Synthetic image's high-level texture features derived from the fundamental frequency.}\label{fig:colors_high_level_features_synth}    
 \end{figure}
 
-\section{Gabor Complex Color Boundaries}
+\section{Graph-based Image Gradient and Segmentation}
+
+In this section, we develop the methodology to obtain a perceptual gradient on an image graph. Such an image gradient is said perceptual as it is based on the multispectral decomposition of an image using Gabor filters. We use EMD as a measure of similarity between the graph's nodes to define the edges' weight. Specifications and adaptations of the EMD are also developed in this section. Subsequently, we use the resulting gradients to segment the image using well-known state-of-the-art techniques.  
+
+\subsection{Earth Mover's Distance for Non-normalized Distributions}
+In chapter \ref{ch:similarity_measures}, we have seen the utility of the EMDas a true metric for measuring similarity between distributions. In image retrieval systems based on color information, the EMD can measure tiny changes in the normalized color distributions of superhero images. On the other hand, with the texture patches, the EMD can capture, reflect and measure the importance of the logarithmic (frequency) and polar (orientation) axis of the texture signature (see figure \ref{fig:MDS_EMD} in section \ref{ch:suplementary_material_retrieval_systems}). This chapter uses EMD to measure the similarity between two elements of an image: pixels or superpixels. By measuring the similarity of elements in Gabor's feature space, we locally measure changes in color and texture in the image. 
+
+The EMD \cite{Rubner.Tomasi.ea:IJCV:2000} , as we used it to measure color and texture distributions in chapter \ref{ch:similarity_measures} (cf. Eq. \eqref{eq:emd}), is a true metric only when used with normalized distributions (histograms or signatures), i.e., distributions with total mass equal to one. This fact has no impact when the distributions represent global information of an image (color or texture). However, the distributions of the image elements (pixels or superpixels) contain only a portion of the information; for example, in the case of our feature space, Gabor's energy. 
+
+Normalizing the individual pixels or superpixels' texture signatures leads to Gabor energy information loss, so the classic EMD cannot be applied. We use instead the EMD proposed by \cite{Pele.Werman:ECCV:2008}.
+
+\begin{equation}
+\medmath{d_{\widehat{EMD}}(P, Q) = \left( \underset{\{f_{ij}\}}{\mathrm{min}}\sum_{i,j}f_{ij}c_{ij}\right)
++ \left\vert \sum_{i} P_i - \sum_{j} Q_j \right\vert \times \alpha\, \underset{{i,j}}{\mathrm{max}} \{c_{ij}\}}  \label{eq:emd_pele} 
+\end{equation}
+such that
+\begin{itemize}
+	\item $\sum_{j}f_{ij} \leq P_i$;
+	\item $\sum_{i}f_{ij} \leq Q_j$;
+	\item $\sum_{i,j}f_{ij} \leq Q_j$;
+	\item $\sum_{i,j}f_{ij} = \mathrm{min} \left( \sum_{i} P_i , \sum_{j} Q_j\right)$;
+	\item $f_{ij} \geq 0$		
+\end{itemize}
+where $f_{ij}$ denotes the amount transported and $c_{ij}$ denotes the transport cost from the $i$th supplier in $P$ to the $j$th consumer in $Q$. 
+
+\subsection{Graph Image Gradients}
+As we described earlier, we can use pixels or superpixels as support to represent an image as a graph. Figure \ref{fig:computational_support} shows a natural-color image, its superpixels obtained with the SLIC technique (approximately 2500 regions), and the region adjacency graph obtained on the superpixels. In this sense, each node of the graph is positioned at the centroid of each superpixel in the image. This strategy allows reducing the EMD calculation time between nodes of the graph, with the compromise. The pixel adjacency graph of the image is not displayed (see Fig. \ref{fig:pag_example} instead as a PAG reference); however, we used a 4 neighboring node adjacency system (4nn) for its creation.
+
+The weight of the edges between nodes of both computational supports is given by the EMD for non-normalized distributions. 
+\begin{equation}
+	\mathsf{e}_{ij} \leftarrow \omega(\mathsf{v}_i, \mathsf{v}_j) = d_{\widehat{EMD}}(\widetilde{e}(i), \widetilde{e}(j))
+\end{equation}
+In color images, we obtain a weighted edge graph for each channel of the complex luminance-chrominance color space. Figure \ref{fig:graph_gradient_pixel_superpixel} shows the weighted graphs of each channel of a natural image based on pixels and superpixels. 
+
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{100007_lum_grad} 
+    \end{subfigure}         
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{100007_weighted_lum_rag}
+    \end{subfigure}\\ [1ex]    
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{100007_cr_grad}
+    \end{subfigure}     
+    \begin{subfigure}[b]{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{100007_weighted_cr_rag} 
+    \end{subfigure}\\ [1ex]          
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{100007_ci_grad}
+    \end{subfigure}   
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{100007_weighted_ci_rag}
+    \end{subfigure}\\ [1ex]          
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{100007_pred_grad}
+        \caption{Pixel-based graph gradient}
+    \end{subfigure}   
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{100007_weighted_pred}
+        \caption{Region-based graph gradient}
+    \end{subfigure}
+    
+	\caption{Graph gradient images. First row: Luminance channel, second raw: Chrominance (real part), and third raw: Chrominance (imag part). The columns names indicate the respective graph structure used to compute the gradient.}\label{fig:graph_gradient_pixel_superpixel}    
+\end{figure}
+
+The gradients obtained with this methodology follow the color and texture variations of the authentic images. Furthermore, an essential aspect of our methodology is that the image's decomposition using the optimized Gabor filters and the complex color space respects Parseval's identity. In other words, the sum of all Gabor responses (in frequency axis, angular axis, and per color channel) is equal to 1. This property is reflected in the weights of the edges of the luminance and chrominance graphs. Generally, the luminance channel is the one that recovers most of the energy, while the color energy is divided into the real and imaginary parts of the chrominance. In the gradients of the second row of images of figure \ref{fig:graph_gradient_pixel_superpixel}, the maximum distance between two nodes in the luminance channel is approximately 30, while in the real and imaginary part of the chrominance, the distance varies between 10 and 14. This property allows us to add the weights of the edges of each channel's graphs to obtain a single graph gradient. We can see the total gradients in the pixel and superpixel support in figure \ref{fig:total_graph_gradient_pixel_superpixel}.
+
+\subsection{Image Segmentation Based on Image Gradients}
+The perceptual gradients obtained with EMD contain the necessary structure to segment images using graph-based segmentation methods. We use the adjacency matrix of the graph for this purpose. Here we present the methodology and results of three different segmentation methods on the weighted graphs on the superpixel support; pixel-level graphs are not considered due to the high computation time. 
+
+\subsubsection{MST threshold graph-cut}
+
+This image segmentation method consists of obtaining the minimum spanning tree (MTS) of the total edge-weighted graph (with normalized values between 0 and 1) and then perform a cut over the graph. Since in the MST, there is only a single path that joins all the nodes of the graph, we can make one or more graph cuts to separate the image into regions. We define the edges that are removed by the cut setting a threshold value over the weights of the MST edges. This threshold value choice is not always obvious, and this value may differ for each image.
+
+We propose obtaining a threshold value by fitting a probability density function to the distribution of the MST edges values. We hypothesize that the areas with the same color and (or) texture information behave as flat areas in the generated feature space; therefore, the edges that connect these areas have a considerable EMD value and behave as outliers within the probability function. We choose the logarithmic distribution as the density function to fit. The threshold value is defined then by the log distribution point where the edge weights reach the quantile of order $q = 0.9$. Under this setting, we cut all the MST edges above the quantile and keep $90\%$ of the graph's edges. The segmentation of the image is given by the connected components of the resulting graph.
+
+Taking the example of the polar bear image, figure \ref{fig:graphcut_segmentation_technique}  shows the MST graph of the image and the weight distribution of the MST edges (black bars), and the logarithmic distribution (red line) that matches the weighted histogram. The red arrow on the plot shows the threshold value for cutting the graph. The resulting segmentation is shown in subfigure \ref{fig:graphcut_segmentation_result}.
+
+An advantage of this method is the computational speed to obtain an image sepgmentation. Furthermore, selecting the threshold value for the graph cut is independent of the user and self-adapting for each image. However, the choice of the quantile $q$ is important; a very low value leads to cutting edges within flat areas of color and (or) texture, generating an over-segmentation of the image; on the other hand, a high threshold value leads to preserving most of the edges so that most of the image regions remain connected.
+
+\subsubsection{Spectral clustering}
+
+Spectral clustering is a technique used to cluster elements of a graph \cite{Ng.Jordan.ea:NIPS:2001}. Considering the RAG weighted with the EMD over the Gabor feature space, we used this technique to group the superpixels into perceptual regions consistent with the color and texture information.
+
+This technique transfers the data from a given domain to the spectral domain using eigendecomposition. The general process of spectral clustering is mainly divided into the following three stages:
+
+\begin{itemize}
+	\item Preprocessing: Construct a similarity matrix.
+	\item Decomposition: Compute the Laplacian graph's eigenvectors to embed the data points in a low-dimensional space (spectral embedding).
+	\item Grouping: Assign the points in k clusters based on the new representation using the k-means algorithm.
+\end{itemize}
+
+Detailing the stages of spectral clustering, we obtain the affinity matrix $A = (A_{ij})$ from the graph based on superpixels. The elements of the matrix are given by the function
+\begin{equation}	
+	A_{ij}= 
+	\begin{cases}
+		\exp{\left(- \alpha \frac{\omega_{ij}}{\sigma(W)}\right)}  \quad \text{if $i, j$ are adjacent in $\mathcal{G}$} \\
+		0 \quad \text{elsewhere}
+	\end{cases}	 
+\end{equation}
+where $\omega_{ij}$ is the measure of distance between nodes of the graph (given by the EMD between non-normalized distributions); $\sigma(W)$ is the total standard deviation of the weight matrix $W$ that serves a global optimization parameter for the affinity matrix computation and; $\alpha$ is a human-defined constant which controls how rapidly the affinity $A_{ij}$ falls off with the distance between $i$ and $j$.
+
+The spectral decomposition is done using the Laplacian matrix, which depends on the affinity matrix $A$ and the matrix of degree $D$. We follow the algorithm of \cite{Ng.Jordan.ea:NIPS:2001}, which proposes to use the normalized Laplacian matrix $L = D^{-1/2} A D^{-1/2}$. This Laplacian matrix form is known as the non-normalized one. Once the k largest eigenvectors of $ L $ have been found and normalized, we apply the k-means algorithm on the data points of this reduced space of the graph and assign each node to a cluster.
+
+Figure \ref{fig:spectral_clustering_process} shows the similarity graph constructed from the EMD distances between texture signatures. Since the similarity function $s(i, j)$ is inverse to the distance $\omega (i, j)$ between nodes, we see that the edges' value tends to $0$ (black edges) when the regions are dissimilar, and when the regions are similar, the edges' value tends to $1$ (white edges). Subfigure \ref{fig:spectral_clustering_segm_result} shows the polar bear segmentation result using $k = \mathrm{min}(\mathcal{S})$ (which for this image $k =5$) and $\alpha = 6$.
+
+\subsubsection{Normalized graph-cut}
+The Normalized cuts technique is a variation of the spectral clustering technique to cluster graphs. Initially proposed by \cite{JianboShi.Malik:PAMI:2000}, this method performs the same spectral clustering steps described above with some minor differences. As for the affinity matrix, it remains the same. However, the Laplacian matrix here is given as
+$L_{Ncut} = D^{-1}L$
+so the eigendecomposition problem is different as well.
+
+Furthermore, the normalized cut is a recursive method that finds a bipartition of the graph to maximize $Ncut$. This process is repeated considering the stability of the cut and if $Ncut$ is below the preset value. This condition implies that, unlike spectral clustering, we do not need to introduce a specific number of regions $k$ to find in the image. We find more details about this method in \cite{JianboShi.Malik:PAMI:2000}. We show the segmentation result of the polar bear image using the normalized cut method in figure \ref{fig:norm_cut_segm_result}. 
+
+\subsubsection{Comparison of the Different Graph-based Segmentation Methods}
+We evaluate the quality of the segmentation given by the three segmentation methods based on graphs: MST threshold graph-cut, Spectral clustering, and Normalized graph-cut.  For this, we use the Berkeley image database test set, and the F-measure obtained from the precision and recall scores described in chapter \ref{ch:complex_spectral_image_decomposition}. 
+
+In figure \ref{fig:boxplot_score_methods}, we show the resulting scores applying the segmentation methods to graphs built in different feature spaces. In particular, we vary the input color space to construct the luminance-chrominance representation of the image.
+
+\begin{figure*}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.2\textwidth}
+        \includegraphics[width=\textwidth]{100007}
+        \caption{Input Image}
+    \end{subfigure}\hfill
+    \begin{subfigure}[b]{0.2\textwidth}
+        \includegraphics[width=\textwidth]{100007_graphcut_result}
+        \caption{Threshold graph-cut}
+    \end{subfigure}\hfill
+    \begin{subfigure}[b]{0.2\textwidth}
+    	\centering
+    	\includegraphics[width=\textwidth]{100007_spec_result}
+        \caption{Spectral clustering}
+    \end{subfigure}\hfill 
+    \begin{subfigure}[b]{0.2\textwidth}
+    	\centering
+        \includegraphics[width=\textwidth]{100007_ncut_result}
+        \caption{Normalized graph-cut}
+    \end{subfigure} 
+        	    
+    \caption{Graph-based segmentation results.}\label{fig:graph_based_segmentations}    
+\end{figure*}
+
+\begin{figure*}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.3\textwidth}
+        \includegraphics[width=\textwidth]{Thr_graphcut_scores_log_mst_boxplot}
+        \caption{Threshold graph-cut}
+    \end{subfigure}\hfill     
+    \begin{subfigure}[b]{0.3\textwidth}
+    	\centering
+    	\includegraphics[width=\textwidth]{Spectral_clustering_scores_global_complete_boxplot}
+        \caption{Spectral clustering}
+    \end{subfigure}\hfill     
+    \begin{subfigure}[b]{0.3\textwidth}
+    	\centering
+        \includegraphics[width=\textwidth]{Normalized_graphcut_scores_global_complete_boxplot}
+        \caption{Normalized graph-cut}
+    \end{subfigure} 
+        	    
+    \caption{Segmentation scores of the different graph-based segmentation methods.}\label{fig:boxplot_score_methods}    
+\end{figure*}
+
+\section{Image Contour Detection and Segmentation}
+
+The graph-based segmentation methods presented above showed exciting results in the segmentation task of natural color images. However, these methods require a series of parameters that are often not so easy to define, for example, the number of $k$ regions to segment, the $\alpha$ parameter for constructing the affinity matrix, and the stop point of the normalized cut algorithm. Although there are various literature methods to optimize and automate the choice of such parameters, this implies a longer calculation time to obtain a segmentation. The peculiarity of these methods is that they depend on an over-segmentation in superpixels before calculating the graph's gradient. Although this step reduces the number of nodes and, consequently, the number of edges and EMD to be calculated, the contours in the image's final segmentation are part of the superpixel method's contours. In other words, if the boundaries of the regions thrown by the SLIC algorithm do not correspond to the contours of the objects in the images, these borders will not appear in the final segmentation. 
+
+This section presents the methodology to obtain the objects' perceptual contours in an image directly using the information from the edge-weighted graph instead of using graph-based segmentation methods. The main advantage of this approach is that the image's contours can be obtained at the pixel and superpixel levels. We call our contour detector Gabor-filter-based Complex Color (GCC) detector.
+
+The procedure for obtaining the contours is straightforward. The similarity between the image elements (pixels or superpixels) is calculated by the EMD and stored in the graph's edges. So, we obtain the perceptual contours for pixel-level graphs with the transformation of the edge-weighted graph into a node-weighted graph. In such a case, each node's value (pixel) is the maximum value between the weights of all the edges connected to the node. In the case of superpixels, we transform the edge-weighted graph into a perceptual contour image by assigning the weight of the edge between two regions to the pixels that form the common border between these superpixels. Figure \ref{fig:GCC_results} shows some examples of the contours found with this methodology in images of the BSDS500 using the graphs at the pixel and superpixel levels. 
+
+\begin{figure*}[!ht] 
+   
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{Input image}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018}
+    \end{subfigure} \\ \vspace{-5pt}      
+    
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{GT}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083_gt_grad} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084_gt_grad}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096_gt_grad}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018_gt_grad}
+    \end{subfigure} \\ \vspace{-5pt}   
+    
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{4nn}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083_4nn_cont} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084_4nn_cont}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096_4nn_cont}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018_4nn_cont}
+    \end{subfigure} \\ \vspace{-5pt} 
+    
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{2500}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083_2500sp_cont} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084_2500sp_cont}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096_2500sp_cont}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018_2500sp_cont}
+    \end{subfigure}   
+    
+	\caption{Some examples of image contours obtained with the Gabor-filted-based Complex Color (GCC) feature space on the support of pixels (4nn) and superpixels (2500) graph.}\label{fig:GCC_results}    
+\end{figure*}
 
 
-\subsection{The EMD for Non-normalized Distributions}
-\subsection{Pixel-level Graph Gradient}
-\subsection{Region-level Graph Gradient}
+\subsection{Contour-based Image Segmentation: Hierarchical Watershed}
 
-\section{Gabor Complex Color Segmentation}
-\subsection{Graph-basaed Segmentation}
-\subsection{Hierarchical Watershed}
-\subsubsection{Interactive Segmentation}
+Image segmentation is a complementary problem to contour detection. Some methods, such as the UCM \cite{Arbelaez.Maire.ea:PR:2009}, generate a hierarchical partition of the image from image contours. In a partition hierarchy, the image is represented as a sequence of coarse to fine partitions that satisfy the principle of causality of \cite{Koenderink:BC:1984}, that is, any partition is a refinement of the previous one in the sequence \cite{Perret.Cousty.ea:TIP:2018}.
 
-\section{Comparision With the State of the Art}
-\subsection{Scores}
+We only use the gradient information resulting from the edge-weighted graph's transformation to a boundary image (described in the previous section) in a classic morphological approach for image segmentation, the so-called watershed. This approach complies with the principle of causality, so defining a hierarchy of watersheds as a sequence of watershed segmentation of an image is possible. 
+
+One of the first authors to study the properties and relationship between the partition hierarchy and the watershed operator for image segmentation are \cite{Najman.Schmitt:PAMI:1996}. In general terms, this method constructs a watershed by a flooding process; that is, the gradient image, seen as a topographic surface, is pierced at its minima and progressively submerged in water. The water fills the catchment basins of the minima and forms lakes. When the water of two lakes meets, the saddle point height determines the saliency of the corresponding watershed arch. The sequence of watershed segmentation is obtained by sequentially removing the minima from the gradient image according to regional attributes related to size and the contrast of the components, such as dynamics, area, or volume. In figure \ref{fig:GCC_higra_results}, we show the results of hierarchical watershed segmentation using the volume attribute on the GCC4nn and GCC2500 image gradients. 
+
+\begin{figure*}[!ht] 
+   
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{Input image}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018}
+    \end{subfigure} \\ \vspace{-5pt}      
+    
+        
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{4nn}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083_4nn_higra} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084_4nn_higra}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096_4nn_higra}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018_4nn_higra}
+    \end{subfigure} \\ \vspace{-5pt} 
+    
+    \begin{subfigure}[t]{\dimexpr0.23\textwidth+20pt\relax}
+    	\centering
+    	\makebox[20pt]{\raisebox{30pt}{ \rotatebox[origin=c]{90} {\small \textsf{\textbf{2500}}} }}%
+    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{175083_2500sp_higra} 
+    \end{subfigure}      
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{101084_2500sp_higra}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{41096_2500sp_higra}
+    \end{subfigure}
+%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+%      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.23\textwidth}
+    	\centering
+        \includegraphics[height=67.68857pt]{2018_2500sp_higra}
+    \end{subfigure}   
+    
+	\caption{Some examples of image segmentations obtained with the hirachical watershed method on the Gabor-filter-based Complex Color (GCC) boundaries in the pixels level support (4nn) and superpixels (2500) support.}\label{fig:GCC_higra_results}    
+\end{figure*}
+
+
+
+\section{Comparison with the State of the Art}
+
+\begin{table}[!ht]
+\resizebox{0.5\textwidth}{!}{%
+\centering
+\begin{tabular}{c|c|c|c||c|c|c|}
+\cline{2-7}
+                                  & \multicolumn{3}{c||}{\textbf{BSDS300}} & \multicolumn{3}{c|}{\textbf{BSDS500}} \\ \cline{2-7} 
+                                  & ODS         & OIS        & AP         & ODS         & OIS        & AP         \\ \hline
+\multicolumn{1}{|c|}{Human}       & 0.79        & 0.79       & -          & 0.80        & 0.80       & -          \\ \hline
+\multicolumn{1}{|c|}{Ours}        & \textbf{0.65}        & \textbf{0.67}       & \textbf{0.62}       & \textbf{0.66       } & \textbf{0.68}       & \textbf{0.62}       \\
+\multicolumn{1}{|c|}{Mean Shift \cite{Vedaldi.Soatto:ECCV:2008}}  & 0.63        & 0.66       & 0.54       & 0.64        & 0.68       & 0.56       \\
+\multicolumn{1}{|c|}{Felz-Hutt \cite{Felzenszwalb.Huttenlocher:IJCV:2004}}   & 0.58        & 0.62       & 0.53       & 0.61        & 0.64       & 0.56       \\
+\multicolumn{1}{|c|}{NCuts \cite{JianboShi.Malik:PAMI:2000}}       & 0.62        & 0.66       & 0.43       & 0.64        & 0.68       & 0.45       \\
+\multicolumn{1}{|c|}{Canny \cite{Canny:PAMI:1986} }       & 0.58        & 0.62       & 0.58       & 0.60        & 0.63       & 0.58       \\
+\multicolumn{1}{|c|}{Pb \cite{Malik.Belongie.ea:IJCV:2001}}          & 0.65        & -          & -          & -           & -          & -          \\ \hline
+\multicolumn{1}{|c|}{mPb \cite{Maire.Arbelaez.ea:CVPR:2008}}         & 0.67        & -          & -          & -           & -          & -          \\
+\multicolumn{1}{|c|}{sPb \cite{Maire.Arbelaez.ea:CVPR:2008}}         & 0.68        & -          & -          & -           & -          & -          \\
+\multicolumn{1}{|c|}{gPb \cite{Maire.Arbelaez.ea:CVPR:2008}}         & 0.70        & 0.72       & 0.66       & 0.71        & 0.74       & 0.65       \\
+\multicolumn{1}{|c|}{gPb-owt-ucm \cite{Arbelaez.Maire.ea:PR:2009}} & 0.73        & 0.76       & 0.73       & 0.73        & 0.76       & 0.73       \\ \hline
+\end{tabular}}
+\caption{BSDS image boundary detection scores.}
+\label{table:boundary_scores}
+\end{table}
+
+
+\begin{table}[!ht]
+\resizebox{0.5\textwidth}{!}{%
+\centering
+\begin{tabular}{c|c|c|c||c|c||c|c|}
+\cline{2-8}
+                                  & \multicolumn{7}{c|}{\textbf{BSDS500}}                                                                                       \\ \cline{2-8} 
+                                  & \multicolumn{3}{c||}{SC $(\uparrow)$} & \multicolumn{2}{c||}{PRI $(\uparrow)$} & \multicolumn{2}{c|}{VI $(\downarrow)$} \\ \cline{2-8} 
+                                  & ODS          & OIS          & Best         & ODS               & OIS               & ODS                & OIS               \\ \hline
+\multicolumn{1}{|c|}{Human}       & 0.72         & 0.72         & -            & 0.88              & 0.88              & 1.17               & 1.17              \\ \hline
+\multicolumn{1}{|c|}{Ours}        & 0.56         & 0.60         & 0.67         & 0.81              & 0.83              & 1.79               & 1.57              \\ \hline
+\multicolumn{1}{|c|}{gPb-owt-ucm \cite{Arbelaez.Maire.ea:PR:2009}} & \textbf{0.59 }        & \textbf{0.65}         & \textbf{0.74 }        & \textbf{0.83}              & \textbf{0.86}              & \textbf{1.69}               & \textbf{1.48}              \\ \hline
+\multicolumn{1}{|c|}{Mean Shift \cite{Vedaldi.Soatto:ECCV:2008}}  & 0.54         & 0.58         & 0.66         & 0.79              & 0.81              & 1.85               & 1.64              \\ \hline
+\multicolumn{1}{|c|}{Felz-Hutt \cite{Felzenszwalb.Huttenlocher:IJCV:2004}}   & 0.52         & 0.57         & 0.69         & 0.80              & 0.82              & 2.21               & 1.87              \\ \hline
+\multicolumn{1}{|c|}{Ncuts \cite{JianboShi.Malik:PAMI:2000}}       & 0.45         & 0.53         & 0.67         & 0.78              & 0.80              & 2.23               & 1.89              \\ \hline
+\end{tabular}}
+\caption{BSDS image segmentation scores.}
+\label{table:segmentation_scores}
+\end{table}
+
 \subsection{Results}
+To provide a basis for comparing the GCC boundaries, we use the region merging (Felz-Hutt), Mean Shift, and Multiscale NCuts segmentation methods and the Canny and (Probability-boundary) Pb edge detectors reviewed in section \ref{sec:soa_boundaries_segmentation}. We evaluate each method using the boundary-based precision-recall framework. On the other hand, we use the Variation of Information, Probabilistic Rand Index, and segment covering criteria discussed above to compare the GCC hierarchical segmentations. The BSDS serves as ground truth for both the boundary and region quality measures since the human-drawn boundaries are closed and work as segmentations.
 
-%\subsection{Subsection Heading Here}
-%
-%
-%Subsubsection text here.
+We report in Table \ref{table:boundary_scores} the boundary detection scores on the BSDS300 and the BSDS500. Besides, figure \ref{fig:pr_curves} displays the precision-recall curves of different methods only for the BSDS500. Table \ref{table:segmentation_scores} presents region benchmarks on the BSDS500. 
 
+For a family of machine segmentations $\{S_i\}$, associated with different scales of a hierarchical algorithm or different sets of parameters, we report three scores about the ground-truth covering by segments in $\{S_i\}$. These correspond to selecting covering regions from the segmentation at a universal fixed scale (ODS), a fixed scale per image (OIS), or from any level of the hierarchy or collection $\{S_i\}$ (Best). We also report the Probabilistic Rand Index and Variation of Information benchmarks. While the relative ranking of segmentation algorithms remains fairly consistent across different benchmark criteria, the boundary benchmark (table \ref{table:boundary_scores} and figure \ref{fig:pr_curves}) appears most capable of discriminating performance.
 
-% An example of a floating figure using the graphicx package.
-% Note that \label must occur AFTER (or within) \caption.
-% For figures, \caption should occur after the \includegraphics.
-% Note that IEEEtran v1.7 and later has special internal code that
-% is designed to preserve the operation of \label within \caption
-% even when the captionsoff option is in effect. However, because
-% of issues like this, it may be the safest practice to put all your
-% \label just after \caption rather than within \caption{}.
-%
-% Reminder: the "draftcls" or "draftclsnofoot", not "draft", class
-% option should be used if it is desired that the figures are to be
-% displayed while in draft mode.
-%
-%\begin{figure}[!t]
-%\centering
-%\includegraphics[width=2.5in]{myfigure}
-% where an .eps filename suffix will be assumed under latex, 
-% and a .pdf suffix will be assumed for pdflatex; or what has been declared
-% via \DeclareGraphicsExtensions.
-%\caption{Simulation results for the network.}
-%\label{fig_sim}
-%\end{figure}
-
-% Note that the IEEE typically puts floats only at the top, even when this
-% results in a large percentage of a column being occupied by floats.
+%Los resultados de las tablas y de la figura 4 muestran que nuestro metodo sobre pasa la performancia del famoso detector de contornos Pb. Si bien los escores 
 
 
-% An example of a double column floating figure using two subfigures.
-% (The subfig.sty package must be loaded for this to work.)
-% The subfigure \label commands are set within each subfloat command,
-% and the \label for the overall figure must come after \caption.
-% \hfil is used as a separator to get equal spacing.
-% Watch out that the combined width of all the subfigures on a 
-% line do not exceed the text width or a line break will occur.
-%
-%\begin{figure*}[!t]
-%\centering
-%\subfloat[Case I]{\includegraphics[width=2.5in]{box}%
-%\label{fig_first_case}}
-%\hfil
-%\subfloat[Case II]{\includegraphics[width=2.5in]{box}%
-%\label{fig_second_case}}
-%\caption{Simulation results for the network.}
-%\label{fig_sim}
-%\end{figure*}
-%
-% Note that often IEEE papers with subfigures do not employ subfigure
-% captions (using the optional argument to \subfloat[]), but instead will
-% reference/describe all of them (a), (b), etc., within the main caption.
-% Be aware that for subfig.sty to generate the (a), (b), etc., subfigure
-% labels, the optional argument to \subfloat must be present. If a
-% subcaption is not desired, just leave its contents blank,
-% e.g., \subfloat[].
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=0.4\textwidth]{pr_curves_mymethod}
+	\caption{Precision-recall plot of different contour detectors.}\label{fig:pr_curves}
+\end{figure}
 
-
-% An example of a floating table. Note that, for IEEE style tables, the
-% \caption command should come BEFORE the table and, given that table
-% captions serve much like titles, are usually capitalized except for words
-% such as a, an, and, as, at, but, by, for, in, nor, of, on, or, the, to
-% and up, which are usually not capitalized unless they are the first or
-% last word of the caption. Table text will default to \footnotesize as
-% the IEEE normally uses this smaller font for tables.
-% The \label must come after \caption as always.
-%
-%\begin{table}[!t]
-%% increase table row spacing, adjust to taste
-%\renewcommand{\arraystretch}{1.3}
-% if using array.sty, it might be a good idea to tweak the value of
-% \extrarowheight as needed to properly center the text within the cells
-%\caption{An Example of a Table}
-%\label{table_example}
-%\centering
-%% Some packages, such as MDW tools, offer better commands for making tables
-%% than the plain LaTeX2e tabular which is used here.
-%\begin{tabular}{|c||c|}
-%\hline
-%One & Two\\
-%\hline
-%Three & Four\\
-%\hline
-%\end{tabular}
-%\end{table}
-
-
-% Note that the IEEE does not put floats in the very first column
-% - or typically anywhere on the first page for that matter. Also,
-% in-text middle ("here") positioning is typically not used, but it
-% is allowed and encouraged for Computer Society conferences (but
-% not Computer Society journals). Most IEEE journals/conferences use
-% top floats exclusively. 
-% Note that, LaTeX2e, unlike IEEE journals/conferences, places
-% footnotes above bottom floats. This can be corrected via the
-% \fnbelowfloat command of the stfloats package.
-
-
-
-
-\section{Conclusion}
+\section{Conclusions}
 The conclusion goes here.
 
 
