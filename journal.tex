@@ -562,13 +562,10 @@ where $H$ and $I$ respectively represent the entropies and mutual information be
 \section{Gabor Filters for Full Image Spectrum Coverage}
 %Optimal Gabor filters
 %The Gabor Filter as a Measurement Tool
-
-This section presents a reminder of the signal theory applied to image processing for feature extraction. First, we show the reasons for restricting signal analysis in two predefined domains: time and frequency (for the 1-d case) and space and frequency (for the 2-d case). We especially recall Gabor filter theory and properties by showing how these filters are related to Heisenberg's uncertainty principle.
-
-As we mentioned before, we use Gabor filters as a tool to measure the information that characterizes a signal. Since the signal carries relevant information at different points and scales (either in the spatial or space-frequency domain), a well-known strategy used in the literature is to create a filter bank that covers most of the spectrum to be able to reconstruct the original signal.
+We use Gabor filters as a tool to measure the information that characterizes a signal. Since the signal carries relevant information at different points and scales (either in the spatial or space-frequency domain), a well-known strategy used in the literature is to create a filter bank that covers most of the spectrum to be able to reconstruct the original signal. This section presents a reminder of the signal theory applied to image processing for feature extraction. First, we show the reasons for restricting signal analysis in two predefined domains: time and frequency (for the 1-d case) and space and frequency (for the 2-d case). We especially recall Gabor filter theory and properties by showing how these filters are related to Heisenberg's uncertainty principle.
 
 \subsection{Signals in Two Domains}
-Bound by the Fourier transform, there are two equivalent representations of a signal (one-dimensional (1-d) or two-dimensional (2-d)). The first represents the signal as a function of time, while the second represents it as a function of frequency. These two representations carry the same information but in different ways; besides, we can go from one to another via the Fourier transform (or the inverse Fourier transform), making these special interest descriptions. We define the pair of 1-d Fourier transforms (FT) as follows
+Bound by the Fourier transform, there are two equivalent representations of a signal (one-dimensional (1-d) or two-dimensional (2-d)). The first represents the signal as a function of time, while the second represents it as a function of frequency. These two representations carry the same information but in different ways. Besides, we can go from one to another via the Fourier transform (or the inverse Fourier transform), making these special interest descriptions. We define the pair of 1-d Fourier transforms (FT) as follows
 \begin{equation}\label{eq:fourier_transforms_1d}
     \begin{gathered}
         H(\upsilon) = \mathcal{F}\{h(t)\} = \int_{-\infty}^{\infty} h(t) e^{-j2\pi f t} dt \\
@@ -579,8 +576,8 @@ while for the 2-d case, we define the FT as
 
 \begin{equation}\label{eq:fourier_transforms_2d}
     \begin{gathered}
-        H(u, v) = \mathcal{F}\{h(x, y)\} = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} h(x, y) e^{-j2\pi (ux + vy)} dx dy \\
-        h(x, y) = \mathcal{F}^{-1}\{H(u, v)\} = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty}  H(u, v) e^{j2\pi (ux + vy)} du dv 
+        \medmath{H(u, v) = \mathcal{F}\{h(x, y)\} = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty} h(x, y) e^{-j2\pi (ux + vy)} dx dy} \\
+        \medmath{h(x, y) = \mathcal{F}^{-1}\{H(u, v)\} = \int_{-\infty}^{\infty} \int_{-\infty}^{\infty}  H(u, v) e^{j2\pi (ux + vy)} du dv} 
     \end{gathered}
 \end{equation}
 
@@ -588,7 +585,21 @@ while for the 2-d case, we define the FT as
 
 It is evident that the function $h(t)$ (resp. $h(x, y)$) is located in both domains; however, it is also well known that no signal with compact support can have a finite Fourier transform and vice versa \cite{Bracewell:FourierBook:1999}, there is a particular uncertainty in the time and frequency locations of $h(t)$ (resp. space and frequency locations of $h(x, y)$).
 
-This is the mathematical statement of the uncertainty principle in signal processing \cite{Petrou.Sevilla:Book:2006}.
+
+The uncertainty principle is one of the most famous ideas in quantum mechanics. An early incarnation of the uncertainty principle appeared in a 1927 paper by the German physicist Heisenberg. The uncertainty principle says that we cannot measure the position $(x)$ of a particle with absolute precision. The more accurately we know one of these values, the less accurately we know the other.
+
+However, quantum mechanics' uncertainty principle is just a particular case of a more general compromise in simple everyday life phenomena involving waves. The central idea is connected with the interrelation between frequency and duration. For example, in the case of sound waves, if we want to identify the frequency of a musical note, the shorter the sound lasts in time, the less specific we can be about the exact frequency of the sound to find, it would be necessary to listen to the sound for a longer time, in which case the locality measure loses its sense. In the language of signal processing, we can say that a short signal correlates highly with a wide range of frequencies, and only wide signals correlate with a short range of frequencies. Formally this is expressed as $\Delta t\Delta \omega \geq \frac{1}{2}$ where $\Delta t$ is the duration of the signal in the time domain and $\Delta \omega$ is the bandwidth of the signal in the frequency domain \cite{Petrou.Sevilla:Book:2006}. The uncertainty principle then states: the spectral bandwidth product multiplied with the signal's time duration cannot be less than a particular minimum value. Considering the signal bandwidth in terms of frequency as $\Delta \upsilon$ where $\omega = 2\pi \upsilon$, the uncertainty principle is stated as 
+
+\begin{equation}\label{eq:uncertainty_principle_freq}
+	\Delta t\Delta \upsilon \geq \frac{1}{4\pi}
+\end{equation}
+
+The Heisenberg uncertainty principle can be mathematically proved in signal processing and image processing by means of the Parseval's identity (Parseval's theorem) which is defined as
+
+\begin{equation}\label{eq:parseval_theorem}
+	\medmath{\int_{-\infty}^{\infty} h(t)^2 dt =  \frac{1}{2 \pi} \int_{-\infty}^{\infty} |H(\omega)|^2 d\omega =  \int_{-\infty}^{\infty} |H(\upsilon)|^2 d\upsilon}
+\end{equation}
+where $h(t)$ is a function and $H(\upsilon)$ its the Fourier transform. The mathematical statement of the uncertainty principle in signal processing can be found in \cite{Petrou.Sevilla:Book:2006}.
 
 \subsection{1-d Gabor Filters}
 The uncertainty principle shows that time and frequency are two fundamental domains and physically measurable quantities, but still idealizations if we consider one from the other's perspective. Frequency is a simple waveform in the time domain, but to be sharply defined in the frequency domain, it must be infinite in the time domain, i.e., a waveform that has always existed and will remain forever. In everyday life, it is complicated to find phenomena with these characteristics; it is more common to find signals that have properties from both domains; certainly, they have some frequency characteristics, but they also have a starting point, and after some time, these signals begin to fade away. This phenomenon motivated Dennis Gabor to represent signals simultaneously in time and frequency through the Gabor Elementary Function (GEF) \cite{Gabor:JIEE:1946}. The function represents the minimal quantum of information, i.e., the minimal amount of simultaneous information in time and frequency. In other words, it occupies the minimal area, given by a rectangle, in the time-frequency plane.  
@@ -598,7 +609,7 @@ The Gabor function is derived form the uncertainty principle, therefore, it has 
 \begin{equation}\label{eq:gabor_function_1d_time}
     g(t) =  e ^{-\alpha^2(t-t_0)^2} e ^{j 2 \pi f t + \phi}
 \end{equation}
-where $\alpha$ express the \textit{spread} and $t_0$ denotes the centroid of the Gaussian function, $f$ is the frequency of the sinusoidal wave, and $\phi$ defines the phase shift of the oscillation.
+where $\alpha$ express the spread and $t_0$ denotes the centroid of the Gaussian function, $f$ is the frequency of the sinusoidal wave, and $\phi$ defines the phase shift of the oscillation.
 
 The Fourier transform of Eq. \eqref{eq:gabor_function_1d_time} defines the representation of the Gabor function in the frequency domain $G(\upsilon) = \mathcal{F}\{g(t)\}$ with the following analytical form
 
@@ -606,34 +617,34 @@ The Fourier transform of Eq. \eqref{eq:gabor_function_1d_time} defines the repre
     G(\upsilon) =  \sqrt{\frac{\pi}{\alpha^2}} e ^{-\left(\frac{\pi}{\alpha}\right) ^{2} (\upsilon-f)^2} e ^{-j 2 \pi t_0 (\upsilon-f) + \phi}
 \end{equation}
 
-The equations \eqref{eq:gabor_function_1d_time} and \eqref{eq:gabor_function_1d_freq} show straightforward that the center of gravity $t_0$ is equal to \eqref{eq:center_of_gravity} and the spectral center of gravity $f$ is equal to \eqref{eq:spectral_center_of_gravity}, i.e., the Gabor functions follow Heisenberg's uncertainty principle.   
+%The equations \eqref{eq:gabor_function_1d_time} and \eqref{eq:gabor_function_1d_freq} show straightforward that the center of gravity $t_0$ is equal to $\frac{1}{E_{\infty}} \int_{-\infty}^{\infty} t h(t)^2 dt$ and the spectral center of gravity $f$ is equal to $\frac{2 \pi}{E_{\infty}} \int_{-\infty}^{\infty} f |H(\upsilon)|^2 d\upsilon$, i.e., the Gabor functions follow Heisenberg's uncertainty principle.   
 
-\begin{figure}[!ht] 
+%\begin{figure}[!ht] 
+%
+%	\centering
+%	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{40pt} {(a)} }%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f4_g1}
+%    \end{subfigure}\vspace{-1em}
+%	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{40pt} {(b)} }%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f20_g1}
+%    \end{subfigure}\vspace{-1em}
+%	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{40pt} {(c)} }%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f4_g2}
+%    \end{subfigure}\vspace{-1em}
+%	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
+%    	\makebox[20pt]{\raisebox{40pt} {(d)} }%
+%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f20_g2}
+%    \end{subfigure}\vspace{-1em}
+%	
+%  	\caption{Visualization of the uncertainty principle in 1-d Gabor filters. First column: filters on the time domain, Second column: filters on the frequency domain. (a) $f = 1/4$, $\gamma = 1$; (b) $f = 1/20$, $\gamma = 1$; (c) $f = 1/4$, $\gamma = 2$; (d) $f = 1/20$, $\gamma = 2$.}
+%  \label{fig:examples_1D_GaborFilter}
+%\end{figure}
 
-	\centering
-	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
-    	\makebox[20pt]{\raisebox{40pt} {\captext{(a)}} }%
-    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f4_g1}
-    \end{subfigure}\vspace{-1em}
-	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
-    	\makebox[20pt]{\raisebox{40pt} {\captext{(b)}} }%
-    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f20_g1}
-    \end{subfigure}\vspace{-1em}
-	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
-    	\makebox[20pt]{\raisebox{40pt} {\captext{(c)}} }%
-    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f4_g2}
-    \end{subfigure}\vspace{-1em}
-	\begin{subfigure}[t]{\dimexpr0.45\textwidth+20pt\relax}
-    	\makebox[20pt]{\raisebox{40pt} {\captext{(d)}} }%
-    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{1D_GaborFilter_hor_f20_g2}
-    \end{subfigure}\vspace{-1em}
-	
-  	\caption{Visualization of the uncertainty principle in 1-d Gabor filters. First column: filters on the time domain, Second column: filters on the frequency domain. \captext{(a)} $f = 1/4$, $\gamma = 1$; \captext{(b)} $f = 1/20$, $\gamma = 1$; \captext{(c)} $f = 1/4$, $\gamma = 2$; \captext{(d)} $f = 1/20$, $\gamma = 2$.}
-  \label{fig:examples_1D_GaborFilter}
-\end{figure}
-
-\subsubsection{Filter normalization} \label{subsec:filter_normalization}
-We can define the Gabor filter more appropriately by taking the following justifications. First, we must remember that we use the Gabor function as a linear filter to analyze a signal. Under this condition, the temporal analysis of the signal is carried out using the convolution operator. Considering that the Gabor function is concentrated near the time instant $t_0$ and that a convolution centered at the origin is preferable, we consider $t_0 = 0$. Since there is no evidence that any specific phase would be more beneficial than any other, another parameter that we can omit is the phase shift $\phi$. Moreover, for the functions to be similar at all locations, the phase shift should depend on the location $t_0$, and thus, the phase shift can be removed from the origin-centered filter ($\phi$ = 0). Then, the Gabor filter function in its compact form is defined as 
+\subsubsection{Filter Normalization} \label{subsec:filter_normalization}
+We can define the Gabor filter more appropriately by taking the following justifications. First, we must remember that we use the Gabor function as a linear filter to analyze a signal. Under this condition, the temporal analysis of the signal is carried out using the convolution operator. Considering that the Gabor function is concentrated near the time instant $t_0$ and that a convolution centered at the origin is preferable, we consider $t_0 = 0$. Since there is no evidence that any specific phase would be more beneficial than any other \cite{Liu.Koga.ea:ICDAR:2005}, another parameter that we can omit is the phase shift $\phi$ . Moreover, for the functions to be similar at all locations, the phase shift should depend on the location $t_0$, and thus, the phase shift can be removed from the origin-centered filter ($\phi$ = 0). Then, the Gabor filter function in its compact form is defined as 
 
 \begin{equation}\label{eq:gabor_function_1d_timefreq_compact}
     \begin{gathered}
@@ -676,7 +687,7 @@ can be used as the normalization factor in the time domain to fulfill the two co
 
 Figure \ref{fig:GaborFilter_timefreq_norm_efect} shows a Gabor filter in the time and frequency domain before and after normalization following the two conditions described above. At this point, it is important to note that normalization is an essential step in the multi-spectral analysis and the feature extraction of a signal.
 
-\subsubsection{Frequency filter spacing}\label{subsec:frequency_filter_spacing}
+\subsubsection{Frequency Filter Spacing}\label{subsec:frequency_filter_spacing}
 Our main interest in Gabor filters is the multi-spectral analysis of a function. We accomplish this by using multiple Gabor functions as filters that are tuned on several frequencies $f_m$. This group of filters is known as a \textit{Gabor filter bank}. The separation between the filter bank is defined through the half-response spatial frequency bandwidth $B_F$ measured between two central frequencies $f_1 < f_2$ \cite{Granlund:CGIP:1978}. This bandwidth is measured in octaves and we can express it as
 \begin{equation}\label{eq:octave_spacing}
     B_f = \log_2 \left( \frac{f_2}{f_1} \right)
@@ -688,11 +699,11 @@ The frequency bandwidth eq. \eqref{eq:octave_spacing} shows that the central fre
 \end{equation} 
 where $f_m$ is the $m$th frequency, $f_{max}$ is the maximum desired frequency, $k>1$ is the frequency scaling factor, and $M$ is the total number of frequencies of the filter bank.
 
-The octave spacing between two adjacent filters is an interesting property of the Gabor filters; however, the filters denoted by the Eqs. \eqref{eq:gabor_function_1d_timefreq_normalized} have a spread that only depends on the parameter $\alpha$, regardless of its central frequency $f$. This trait means that when implementing the Gabor function in a filter bank at different frequencies to obtain a multi-spectral decomposition of a signal, all of the filters will have the same spread in the frequency domain. We can see this effect in figure \ref{fig:filterbnk_octave_spacing}, where we show a filter bank with five central frequencies and an adjacent filter's spacing of one octave, that is, $M=5$ and $B_F = 1$. 
+The octave spacing between two adjacent filters is an interesting property of the Gabor filters; however, the filters denoted by the Eqs. \eqref{eq:gabor_function_1d_timefreq_normalized} have a spread that only depends on the parameter $\alpha$, regardless of its central frequency $f$. This trait means that when implementing the Gabor function in a filter bank at different frequencies, all of the filters will have the same spread in the frequency domain. We can see this effect in figure \ref{fig:filterbnk_octave_spacing}, where we show a filter bank with five central frequencies and an adjacent filter's spacing of one octave, that is, $M=5$ and $B_F = 1$. 
 
 
-\subsubsection{Frequency crossing point}
-The fact we choose the filter bank's central frequencies $f_m$ to have a constant separation causes two adjacent Gabor functions to intersect at a particular point on the frequency axis. For example, in a filter bank formed with two Gabor functions with central frequencies $f_1$ and $f_2$, the low cut-off frequency of the function at $f_1$ coincides with the high cut-off frequency of the function at $f_2$. Generally, in the literature, the crossing point $c_1$, corresponds to the points where the Gabor function has decreased half of its maximum value, i.e., $c_1= 1/2=0.5$ \cite{Granlund:CGIP:1978}. However, by setting the crossing point to half of the maximum value, the filter bank does not cover the input signal's entire spectrum. Consequently, the filter bank will not respond (or the response will be minimal) to artifacts oscillating between central frequencies.
+\subsubsection{Frequency Crossing Point}
+The fact we choose the filter bank's central frequencies $f_m$ to have a constant separation causes two adjacent Gabor functions to intersect at a particular point on the frequency axis. For example, in a filter bank formed with two Gabor functions with central frequencies $f_1$ and $f_2$, the low cut-off frequency of the function at $f_1$ coincides with the high cut-off frequency of the function at $f_2$. Generally, in the literature, the crossing point $c_1$, corresponds to the points where the Gabor function has decreased half of its maximum value, i.e., $c_1= 1/2=0.5$ \cite{Granlund:CGIP:1978}. However, by setting the crossing point to half of the maximum value, the filter bank does not cover the input signal's entire spectrum. Consequently, the filter bank will not respond (or the response will be minimal) to artifacts oscillating between central frequencies (see Fig. \ref{fig:filterbnk_half_crossingpoint}).
 
 We obtain the mathematical expression of this crossing point $c_1$ by defining a frequency interval $\Delta f$, representing the distance between points where the function $G(\upsilon)$ begins to decrease. The Gabor function has a peculiarity;  its analytical form in the frequency domain is completely defined by the Fourier transform of the normalized Gaussian function Eq. \eqref{eq:gabor_function_1d_timefreq_normalized}.
 
@@ -707,19 +718,19 @@ we obtain the expression of the half-frequency interval
 \begin{equation}\label{eq:frequency_interval_crossing_point}
     \frac{\Delta f}{2} = \frac{\alpha}{\pi}\sqrt{\ln \left(\frac{1}{c_1}\right)}
 \end{equation}
-from which we obtain that the crossing point is defined as
-\begin{equation}\label{eq:crossing_point}
-    c_1 = e^{-\left(\frac{\alpha}{\pi} \right)^2 \left(\frac{\Delta f}{2}\right)^2 }
+from which we obtain that the frequency crossing point is defined as
+\begin{equation}\label{eq:frequency_crossing_point}
+    c_1 = e^{-\left(\frac{\pi}{\alpha} \right)^2 \left(\frac{\Delta f}{2}\right)^2 }
 \end{equation}
 
-This expression allows us to control the intersection point of two adjacent filters of the filter bank. Modifying the crossing point allows the generation of filter banks that cover (almost) the entire frequency spectrum, translating into a more faithful decomposition of the input signal.
-
+This expression allows us to control the intersection point of two adjacent filters of the filter bank. Modifying the crossing point allows the generation of filter banks that cover (almost) the entire frequency spectrum, translating into a more faithful decomposition of the input signal. For example, in Fig. \ref{fig:filterbnk_new_crossingpoint} we fixed the frequency crossing point to $c_1=0.9$. This choice allows covering almost entirely the frequency spectrum.
+ 
 \begin{figure}[!ht]
 \centering
     \subcaptionbox{\label{fig:filterbnk_octave_spacing}}{\includegraphics[width=0.5\textwidth]{GaborFilterbank_freq_1d_octave_spacing.pdf}} \\
     \subcaptionbox{\label{fig:filterbnk_half_crossingpoint}}{\includegraphics[width=0.5\textwidth]{GaborFilterbank_freq_1d_half_crossingpoint.pdf}}\\
     \subcaptionbox{\label{fig:filterbnk_new_crossingpoint}}{\includegraphics[width=0.5\textwidth]{GaborFilterbank_freq_1d_new_crossingpoint.pdf}}
-\caption{Filter spacing and crossing point effect represented on a bank of filters in the frequency domain: \captext{(a)} Separation of filters in octaves without crossing point between adjacent filters $[B_F=1, \alpha=0.1, c_1=-]$, \captext{(b)} High and low cut-off frequency points given by $\Delta f$ $[B_F=1, \alpha=f/\gamma, c_1=0.5]$, \captext{(c)} Filter bank behavior after changing the crossing point $[B_F=1, \alpha=f/\gamma, c_1=0.9]$.}\label{fig:1d_filterbank_spacing}
+\caption{Filter spacing and crossing point effect represented on a bank of filters in the frequency domain: (a) Separation of filters in octaves without crossing point between adjacent filters $[B_F=1, \alpha=0.1, c_1=-]$, (b) High and low cut-off frequency points given by $\Delta f$ $[B_F=1, \alpha=f/\gamma, c_1=0.5]$, (c) Filter bank behavior after changing the crossing point $[B_F=1, \alpha=f/\gamma, c_1=0.9]$.}\label{fig:1d_filterbank_spacing}
 \end{figure}
 
 
@@ -754,7 +765,7 @@ In addition to adapting the filter size, with Eq. \eqref{eq:1D_Gaussian_envelope
 	\kappa = \lbrace p ~|~ x \in [-3\sigma, 3\sigma] \rbrace \label{eq:1D_gabor_support}
 \end{equation}
 
-The fact that the bank filters have the same width at all frequencies is not a problem, nor is it a requirement to analyze a signal with the Gabor function. However, making the filter width dependent on its frequency implies a multi-resolution analysis since the filters behave like a scaled version of each other. The advantages of an effective adaptative envelope are related to the computation time and the loss of information when we filter a signal with a Gabor filterbank. Figure \ref{fig:1D_space_Gaborfilterbank} illustrates the advantages of using a filter bank with adaptive and effective support (Fig. \ref{fig:1D_space_Gaborfilterbank_env}) versus a conventional filter bank (Fig. \ref{fig:1D_space_Gaborfilterbank_wo_env}). More precisely, in the case of constant envelope width, for the example $\kappa = \lbrace p ~|~ x \in [-50, 50] \rbrace$ (see Fig. \ref{fig:1D_space_Gaborfilterbank_wo_env}), the computation time of the responses is the same for all filter frequencies. In contrast, with the adaptive envelope, the calculation time is reduced for high frequencies since the envelope width is smaller (compare images on the first column of Fig. \ref{fig:1D_space_Gaborfilterbank}). Moreover, there is a risk of losing information from the original signal if the chosen envelope is not large enough for low frequencies to fit in(compare images on the last column of fig. \ref{fig:1D_space_Gaborfilterbank}). Using the adaptative and effective envelope width, we recover as much energy as possible from the signal by optimizing the response's computation time for each frequency $f$ of the filter.
+The fact that the bank filters have the same width at all frequencies is not a problem, nor is it a requirement to analyze a signal with the Gabor function. However, making the filter width dependent on its frequency implies a multi-resolution analysis since the filters behave like a scaled version of each other. The advantages of an effective adaptative envelope are related to the computation time and the loss of information when we filter a signal with a Gabor filterbank. Figure \ref{fig:1D_space_Gaborfilterbank} illustrates the advantages of using a filter bank with adaptive and effective support (Fig. \ref{fig:1D_space_Gaborfilterbank_env}) versus a conventional filter bank (Fig. \ref{fig:1D_space_Gaborfilterbank_wo_env}). More precisely, in the case of constant envelope width, for the example $\kappa = \lbrace p ~|~ x \in [-50, 50] \rbrace$ (see Fig. \ref{fig:1D_space_Gaborfilterbank_wo_env}), the computation time of the responses is the same for all filter frequencies. In contrast, with the adaptive envelope, the calculation time is reduced for high frequencies since the envelope width is smaller (compare images on the first column of Fig. \ref{fig:1D_space_Gaborfilterbank}). Moreover, there is a risk of losing information from the original signal if the chosen envelope is not large enough for low frequencies to fit in (compare images on the last column of fig. \ref{fig:1D_space_Gaborfilterbank}). Using the adaptative and effective envelope width, we recover as much energy as possible from the signal by optimizing the response's computation time for each frequency $f$ of the filter.
 
 \begin{figure}[!ht] 
 	\centering
@@ -773,12 +784,12 @@ The fact that the bank filters have the same width at all frequencies is not a p
 		\label{fig:1D_space_Gaborfilterbank_env}
 	\end{subfigure}
 
-  \caption{Visual representation of the effective Gaussian envelope adaptation with filter bank with $M = 5$ frequencies in the space domain. \captext{(a)} Filter bank with no control over the envelope, \captext{(b)} Filter bank with control over the envelope's effective width.}
+  \caption{Visual representation of the effective Gaussian envelope adaptation with filter bank with $M = 5$ frequencies in the space domain. (a) Filter bank with no control over the envelope, (b) Filter bank with control over the envelope's effective width.}
   \label{fig:1D_space_Gaborfilterbank}
 \end{figure}
 
 
-\subsubsection{Optimized 1-d Gabor function}
+\subsubsection{Optimized 1-d Gabor Function}
 Gathering the different modifications of Gabor functions developed in the previous sections, we can define an optimized 1-d Gabor function as follows
 \begin{equation}\label{eq:gabor_function_1d_timefreq_bank}
     \begin{gathered}
@@ -796,7 +807,7 @@ The generalization of the Gabor function's theory from 1-d to 2-d is straightfor
 
 \begin{equation}\label{eq:uncertainty_principle_2d}
     \begin{gathered}
-        \Delta x\Delta u \geq \frac{1}{4\pi}\textrm{,} \quad \Delta y\Delta v \geq \frac{1}{4\pi}\textrm{and} \quad \Delta x \Delta y \Delta u \Delta v \geq \frac{1}{16\pi^2}
+        \medmath{\Delta x\Delta u \geq \frac{1}{4\pi}\textrm{,} \quad \Delta y\Delta v \geq \frac{1}{4\pi}\textrm{,} \quad \textrm{and}  \quad \Delta x \Delta y \Delta u \Delta v \geq \frac{1}{16\pi^2}}
     \end{gathered}
 \end{equation}
 
@@ -818,12 +829,12 @@ We obtain the analytical expression for the 2-d GEF in the spatial-frequency dom
      \end{gathered}
 \end{equation}
 
-We can normalize the two above expressions following the same reasoning as in the 1-d case. We apply the maximum value condition \eqref{eq:maximun_condition} and the constant spectrum condition \eqref{eq:constant_spectrum_condition} described in section \ref{subsec:filter_normalization} to get $\max{|G(u,v)|} = 1$ and $\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} |g(x,y)| dx dy = 1$ for a filter on any frequency $f$ and orientation $\theta$. 
+We can normalize the two above expressions following the same reasoning as in the 1-d case. We apply the maximum value condition Eq. \eqref{eq:maximun_condition} and the constant spectrum condition Eq. \eqref{eq:constant_spectrum_condition} to get $\max{|G(u,v)|} = 1$ and $\int_{-\infty}^{\infty} \int_{-\infty}^{\infty} |g(x,y)| dx dy = 1$ for a filter on any frequency $f$ and orientation $\theta$. 
 Under these circumstances, the normalization constant is defined by
 \begin{equation}\label{eq:normalization_constant_2d}
     \frac{\alpha \beta}{\pi}
 \end{equation}
-which applied to equations \eqref{eq:gabor_function_2d_space_compact}  and \eqref{eq:gabor_function_2d_frequency_compact}, gives us the normalized Gabor function in both 2-d domains. 
+which applied to Eq. \eqref{eq:gabor_function_2d_space_compact}  and Eq. \eqref{eq:gabor_function_2d_frequency_compact}, gives us the normalized Gabor function in both 2-d domains. 
 
 \begin{equation}\label{eq:gabor_function_2d_spacefrequency_normalized}
     \begin{gathered}
@@ -832,7 +843,7 @@ which applied to equations \eqref{eq:gabor_function_2d_space_compact}  and \eqre
      \end{gathered}
 \end{equation}
 
-\subsubsection{Orientation filter spacing}
+\subsubsection{Orientation Filter Spacing}
 
 Equivalently than its 1-d version, the Gabor functions defined by equations \eqref{eq:gabor_function_2d_spacefrequency_normalized} do not cover most of the spectrum when we use them to build a filter bank at different frequencies and orientations (see Fig. \ref{fig:2d_filterbank_octave_spacing}); therefore, it does not help reconstruct a signal and the extraction of features. To obtain a more encompassing filter bank, it is evident that we need to include a relationship between the sharpness of the Gaussian window and the central frequency. 
 
@@ -849,17 +860,23 @@ and threfore, we can obtain the the filter bank's orientation angles as
     \theta_n = n \frac{\pi}{N} \textrm{,} \quad n = \{0, \cdots, N-1\}
 \end{equation}
 
+\subsubsection{Angular Crossing Point}
 We propose to vary the length of $\beta$ as a function of the central frequency and the angular bandwidth through an angular interval $\Delta \theta$, which is the distance along $\beta$ where $G(u, v)$ begins to decrease.
 
 \begin{equation}\label{eq:orientation_interval_crossing_point}
     \frac{\Delta \theta}{2} = \frac{\beta}{\pi}\sqrt{\ln \left(\frac{1}{c_2}\right)}
 \end{equation}
+from which we obtain the angular crossing point defined as
+\begin{equation}\label{eq:angular_crossing_point}
+    c_2 = e^{-\left(\frac{\pi}{\beta} \right)^2 \left(\frac{\Delta \theta}{2}\right)^2 }
+\end{equation}
+
 
 \begin{figure}[!ht]
 \centering
     \subcaptionbox{\label{fig:2d_filterbank_octave_spacing}}{\includegraphics[width=0.24\textwidth]{GaborFilterbank_freq_2d_octave_spacing.pdf}}
     \subcaptionbox{\label{fig:2d_filterbank_half_crossingpoint}}{\includegraphics[width=0.24\textwidth]{GaborFilterbank_freq_2d_half_crossingpoint.pdf}}    
-\caption{Filter spacing and crossing point effect represented on a 2-d filter bank in the frequency domain: \captext{(a)} Filters separation without crossing points between adjacent filters $[B_F=1, B_{\theta} = 45^{\circ}, \alpha=\beta=0.1, c_1=c_2=-]$, \captext{(b)} Filters separation with crossing points between adjacent filters $[B_F=1, B_{\theta} = 45^{\circ}, \alpha=f/\gamma, \beta=f/\eta, c_1=c_2=0.9]$. High and low cut-off frequency points given by $\Delta f$ and $\Delta \theta$.}\label{fig:2d_filterbank_spacing}
+\caption{Filter spacing and crossing point effect represented on a 2-d filter bank in the frequency domain: (a) Filters separation without crossing points between adjacent filters $[B_F=1, B_{\theta} = 45^{\circ}, \alpha=\beta=0.1, c_1=c_2=-]$, (b) Filters separation with crossing points between adjacent filters $[B_F=1, B_{\theta} = 45^{\circ}, \alpha=f/\gamma, \beta=f/\eta, c_1=c_2=0.9]$. High and low cut-off frequency points given by $\Delta f$ and $\Delta \theta$.}\label{fig:2d_filterbank_spacing}
 \end{figure}
 
 We know that for a filter whose center frequency is $f$ and whose cut-off angular interval is $\Delta \theta$, the full orientation bandwidth $B_\theta$ expressed in radians is defined as \cite{Daugman:JOSA:1985}.
@@ -872,6 +889,7 @@ It is clear that using expression \eqref{eq:orientation_interval_crossing_point}
     B_{\theta} = 2 \tan^{-1} \left( \frac{\beta}{\pi f} \sqrt{\ln \left(\frac{1}{c_2}\right)} \right)
 \end{equation}
 
+\subsubsection{Optimized 2-d Gabor Function}
 Taking the above relationships permits to write the 2-d GEF to use it into a bank as follows. 
 
 \begin{equation}\label{eq:gabor_function_2d_spacefreq_bank}
@@ -880,26 +898,26 @@ Taking the above relationships permits to write the 2-d GEF to use it into a ban
          G(u,v) =  e ^{-\left(\frac{\pi}{f}\right)^2\left( \gamma^2 (u_r-f)^2 + \eta^2 v_r^2\right)}
      \end{gathered}
 \end{equation}
-where now the length $\alpha$ of each filter in the bank will be determined based on the ratio $\gamma = \frac{f}{\alpha}$ and crossing point between adjacent filters $c_1$; and the length $\beta$ will be determined based on the ratio $\eta = \frac{f}{\beta}$ and crossing point between adjacent filters $c_2$.
+where now the length $\alpha$ of each filter in the bank will be determined based on the ratio $\gamma = \frac{f}{\alpha}$ and the frequency crossing point between adjacent filters $c_1$; and the length $\beta$ will be determined based on the ratio $\eta = \frac{f}{\beta}$ and the angular crossing point between adjacent filters $c_2$.
 
 Figure \ref{fig:2d_filterbank_spacing} shows the octave spacing and the orientation bandwidth for a bank of filters in the frequency domain. Particulary, figure \ref{fig:2d_filterbank_octave_spacing} shows a bank without the relationship between the effective width and the central frequency of the filter, whereas figure \ref{fig:2d_filterbank_half_crossingpoint} show the interdependence between $\alpha$, $\beta$, $B_F$, $B_{\theta}$, $f$ and the crossing points $c_1$, $c_2$.
 
-\begin{figure}[!ht]
-	\centering
-	\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=\textwidth]{GaborFilterbank_spatial_2d_real}
-		\caption{Real part}
-		\label{fig:2d_filterbank_real}
-	\end{subfigure}\\
-	\begin{subfigure}[b]{0.4\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{GaborFilterbank_spatial_2d_imag}
-		\caption{Imaginary part}
-		\label{fig:2d_filterbank_imag}
-	\end{subfigure}
-	    
-    \caption{Custom designed Gabor filter bank. The design parameters are: max/min period $[1/f_{min}=70, 1/f_{max}=4]$, crossing points (frequency and angular) $[c_1=c_2= 0.9]$, bandwidths (frequency and angular) $[B_F=1, B_{\theta} = 35^{\circ}]$, standard devaitions $[\sigma=3]$.}\label{fig:2d_filterbank}
-\end{figure}
+%\begin{figure}[!ht]
+%	\centering
+%	\begin{subfigure}[b]{0.4\textwidth}
+%		\includegraphics[width=\textwidth]{GaborFilterbank_spatial_2d_real}
+%		\caption{Real part}
+%		\label{fig:2d_filterbank_real}
+%	\end{subfigure}\\
+%	\begin{subfigure}[b]{0.4\textwidth}
+%		\centering
+%		\includegraphics[width=\textwidth]{GaborFilterbank_spatial_2d_imag}
+%		\caption{Imaginary part}
+%		\label{fig:2d_filterbank_imag}
+%	\end{subfigure}
+%	    
+%    \caption{Custom designed Gabor filter bank. The design parameters are: max/min period $[1/f_{min}=70, 1/f_{max}=4]$, crossing points (frequency and angular) $[c_1=c_2= 0.9]$, bandwidths (frequency and angular) $[B_F=1, B_{\theta} = 35^{\circ}]$, standard devaitions $[\sigma=3]$.}\label{fig:2d_filterbank}
+%\end{figure}
 
 
 \section{Gabor-filter-based Complex Color Feature Space}
@@ -936,7 +954,7 @@ We can obtain a color space based on chromaticity from the classic trichromatic 
 		\label{fig:hsv_complex_color}
 	\end{subfigure}
 	
-	\caption{Graphic display of tree alternatives to obtain the complex color representation of an image: \captext{(a)} form LAB color space, \captext{(b)} from form HSL color space, and \captext{(c)} from HSV color space.}
+	\caption{Graphic display of tree alternatives to obtain the complex color representation of an image: (a) form LAB color space, (b) from form HSL color space, and (c) from HSV color space.}
 	\label{fig:complex_color_spaces}
 \end{figure}
 
@@ -957,12 +975,12 @@ These representations have the advantage of reducing the dimensionality of the c
 
 %\begin{figure}[!ht]
 %    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt}{ \rotatebox[origin=c]{90}{\captext{Input image}} }}%
+%    	\makebox[20pt]{\raisebox{35pt}{ \rotatebox[origin=c]{90}{Input image} }}%
 %    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras}
 %    \end{subfigure} \\    
 %     
 %    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{\captext{HSV luma/chroma}} }}%
+%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{HSV luma/chroma} }}%
 %    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_HSV}
 %    \end{subfigure}      
 %    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
@@ -977,7 +995,7 @@ These representations have the advantage of reducing the dimensionality of the c
 %    \end{subfigure} \vspace{5pt}      
 %    
 %    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{\captext{HSL luma/chroma}} }}%
+%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{HSL luma/chroma} }}%
 %    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_HLS}
 %    \end{subfigure}     
 %    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
@@ -992,7 +1010,7 @@ These representations have the advantage of reducing the dimensionality of the c
 %    \end{subfigure} \vspace{5pt} 
 %    
 %    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{\captext{LAB luma/chroma}} }}%
+%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{LAB luma/chroma} }}%
 %    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_LAB}
 %    \end{subfigure}     
 %    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
@@ -1108,7 +1126,7 @@ We can also visualize the color variations and their influence on the generation
 \centering
     \subcaptionbox{\label{fig:synthetic_image_three_channel_decomposition}}{\includegraphics[width=0.5\textwidth]{synthetic_image_three_channel_decomposition}}
     \subcaptionbox{\label{fig:horizontal_line_three_channel_decomposition}}{\includegraphics[width=0.5\textwidth]{horizontal_line_three_channel_decomposition}}    
-\caption{Illustration of the proposed synthetic image: \captext{(a)} Luminance and chrominance decomposition; \captext{(b)} Numerical values on a horizontal line cut through the three channels.}\label{fig:three_channel_decomposition}
+\caption{Illustration of the proposed synthetic image: (a) Luminance and chrominance decomposition; (b) Numerical values on a horizontal line cut through the three channels.}\label{fig:three_channel_decomposition}
 \end{figure}
 
 
