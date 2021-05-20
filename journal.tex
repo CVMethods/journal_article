@@ -559,7 +559,7 @@ The Variation of Information (VI) is also a measure that has been introduced to 
 where $H$ and $I$ respectively represent the entropies and mutual information between two data clusterings $S$ and $S'$. In our case, these clusterings are the test and ground-truth segmentations.
 
 
-\section{Gabor Filters for Full Image Spectrum Coverage}
+\section{Gabor Filters for Full Image Spectrum Coverage}\label{sec:gabor_filter_description}
 %Optimal Gabor filters
 %The Gabor Filter as a Measurement Tool
 We use Gabor filters as a tool to measure the information that characterizes a signal. Since the signal carries relevant information at different points and scales (either in the spatial or space-frequency domain), a well-known strategy used in the literature is to create a filter bank that covers most of the spectrum to be able to reconstruct the original signal. This section presents a reminder of the signal theory applied to image processing for feature extraction. First, we show the reasons for restricting signal analysis in two predefined domains: time and frequency (for the 1-d case) and space and frequency (for the 2-d case). We especially recall Gabor filter theory and properties by showing how these filters are related to Heisenberg's uncertainty principle.
@@ -921,46 +921,21 @@ Figure \ref{fig:2d_filterbank_spacing} shows the octave spacing and the orientat
 
 
 \section{Gabor-filter-based Complex Color Feature Space}
-The first stage in creating the feature space is transforming the input image from the RGB color space to the two-channel luminance-chrominance space. The representation in two channels, one real and the other complex, of a color image allows us to separate the intervention of luminance and colors in the generation of textures in an image. To help visualize such a joint phenomenon, we create a synthetic image that reflects the complexity of natural color images.
 
-
-\subsection{Complex Color Space}
-Color spaces mostly map the perception of color as a three-dimensional property. However, these dimensions can be encompassed in only two aspects; therefore, we can classify them into luminance-chromaticity and luminance-chrominance color spaces. In both cases, luminance is the property that describes the brightness of the light; however, both categories have different ways of defining color. Chromaticity-based spaces define color independently of luminance (or the luminance equivalent in a particular color space). In a chrominance-based space, the chrominance values of the image change as the light intensity varies.
-  
-We can obtain a color space based on chromaticity from the classic trichromatic models described in the previous section. The chromaticity of these models consists mainly of two independent parameters. For example, the $xyY$ color space, from which we obtain the CIE chromaticity chart (see figure \ref{fig:chrom_diagram}), uses the X and Y dimensions to calculate chromaticity. In RGB space, it is possible to obtain a space based on chromaticity following the same principle, using only the R and G channels for its calculation. For cylindrical color spaces (HSV, HSL), the independent parameters that describe the chromaticity are hue and colorfulness (saturation) dimensions.
-
-\begin{figure}[!ht] 
+\begin{figure}[!ht]
 	\centering
-	\begin{subfigure}[b]{0.22\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{lab_complex_color}
-		\caption{}	
-		\label{fig:lab_complex_color}
-	\end{subfigure}
-	~%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-	%(or a blank line to force the subfigure onto a new line)
-	\begin{subfigure}[b]{0.22\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{hsl_complex_color}
-		\caption{}	
-		\label{fig:hsl_complex_color}
-	\end{subfigure}
-	~%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-	%(or a blank line to force the subfigure onto a new line)
-	\begin{subfigure}[b]{0.22\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{hsv_complex_color}
-		\caption{ }	
-		\label{fig:hsv_complex_color}
-	\end{subfigure}
-	
-	\caption{Graphic display of tree alternatives to obtain the complex color representation of an image: (a) form LAB color space, (b) from form HSL color space, and (c) from HSV color space.}
-	\label{fig:complex_color_spaces}
+	\includegraphics[width=0.5\textwidth]{gabor_color_feature_extraction_diagram}
+	\caption{The proposed methodology for the computation of Gabor features in color images.}\label{fig:proposed_pipeline_gabor_feature_extraction}
 \end{figure}
 
-The chromaticity-based models are reputed for their use in image editing and color correction. However, the chrominance-based spaces are helpful if we are looking for a uniform distribution of the color information in an image. Some examples of color spaces in this category are CIELAB and CIELUV. In them, the colorfulness information of an image is found in channels A and B (resp. U and V), and the final color is defined by the brightness of the light defined by the luminance L.
+\subsection{Complex Color Space}
+Color spaces mostly map the perception of color as a three-dimensional property \cite{Douglas.Kerr:Online:2005}. However, these dimensions can be encompassed in only two aspects: brightness and color. Therefore, we can classify them into luminance-chromaticity and luminance-chrominance color spaces \cite{Kerr:Online:2003}. In both cases, luminance is the property that describes the brightness of the light; however, both categories have different ways of defining color. Chromaticity-based spaces define color independently of luminance (or the luminance equivalent in a particular color space). In a chrominance-based space, the chrominance values of the image change as the light intensity varies.
+  
+We can obtain a color space based on chromaticity from the classic trichromatic models. The chromaticity of these models consists mainly of two independent parameters. For example, the xyY color space uses the $X$ and $Y$ dimensions to calculate chromaticity. In the RGB color space, it is possible to obtain a space based on chromaticity following the same principle, using only the $R$ and $G$ channels for its calculation. For cylindrical color spaces (HSV, HSL), the independent parameters that describe the chromaticity are hue and colorfulness (saturation) dimensions.
 
-The use of spaces based on luminance-chrominance reduces the dimensionality of the color to two channels $L$ and $C$.To make this two-channel color representation possible, we combine the values of channels A and B with the chrominance function.
+The chromaticity-based models are reputed for their use in image editing and color correction. However, the chrominance-based spaces are helpful if we are looking for a uniform distribution of the color information in an image. Some examples of color spaces in this category are CIELAB and CIELUV. In them, the colorfulness information of an image is found in channels $A$ and $B$ (resp. $U$ and $V$), and the final color is defined by the brightness of the light defined by the luminance L.
+
+The use of spaces based on luminance-chrominance reduces the dimensionality of the color to two channels $L$ and $C$. To make this two-channel color representation possible, we combine the values of channels $A$ and $B$ into a chrominance function defined as
 \begin{equation}\label{eq:chrominance_lab}
     C = A + \mathsf{i}B
 \end{equation}
@@ -973,65 +948,41 @@ defines the complex chrominance channel.
 
 These representations have the advantage of reducing the dimensionality of the color information. In image processing, we can obtain these color spaces from the transformation of the image from the RGB space to the LAB, HSV, and HSL spaces, from which we get the chrominance variables and, consequently, the complex chrominance channel. Regarding the luminance, it may differ depending on the input color space. For example, for the LAB and HSL spaces, this variable is naturally defined; however, in the HSV space, the luminance channel is obtained from transforming the RGB input image to a grayscale image. Figure \ref{fig:complex_color_spaces} shows the diagrams for obtaining an image represented in two channels.
 
-%\begin{figure}[!ht]
-%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt}{ \rotatebox[origin=c]{90}{Input image} }}%
-%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras}
-%    \end{subfigure} \\    
-%     
-%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{HSV luma/chroma} }}%
-%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_HSV}
-%    \end{subfigure}      
-%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-%      %(or a blank line to force the subfigure onto a new line)
-%    \begin{subfigure}[b]{0.3\textwidth}
-%        \includegraphics[width=\textwidth]{araras_chrr_HSV}
-%    \end{subfigure}
-%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-%      %(or a blank line to force the subfigure onto a new line)
-%    \begin{subfigure}[b]{0.3\textwidth}
-%        \includegraphics[width=\textwidth]{araras_chri_HSV}
-%    \end{subfigure} \vspace{5pt}      
-%    
-%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{HSL luma/chroma} }}%
-%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_HLS}
-%    \end{subfigure}     
-%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-%      %(or a blank line to force the subfigure onto a new line)
-%    \begin{subfigure}[b]{0.3\textwidth}
-%        \includegraphics[width=\textwidth]{araras_chrr_HLS}
-%    \end{subfigure}
-%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-%      %(or a blank line to force the subfigure onto a new line)
-%    \begin{subfigure}[b]{0.3\textwidth}
-%        \includegraphics[width=\textwidth]{araras_chri_HLS}
-%    \end{subfigure} \vspace{5pt} 
-%    
-%    \begin{subfigure}[t]{\dimexpr0.3\textwidth+20pt\relax}
-%    	\makebox[20pt]{\raisebox{35pt} {\rotatebox[origin=c]{90}{LAB luma/chroma} }}%
-%    	\includegraphics[width=\dimexpr\linewidth-20pt\relax]{araras_lum_LAB}
-%    \end{subfigure}     
-%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-%      %(or a blank line to force the subfigure onto a new line)
-%    \begin{subfigure}[b]{0.3\textwidth}
-%        \includegraphics[width=\textwidth]{araras_chrr_LAB}
-%    \end{subfigure}
-%    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-%      %(or a blank line to force the subfigure onto a new line)
-%    \begin{subfigure}[b]{0.3\textwidth}
-%        \includegraphics[width=\textwidth]{araras_chri_LAB}
-%    \end{subfigure} \vspace{5pt} 
-%        
-%    \caption{Color channels of an image in different color spaces in grayscale.}\label{fig:images_color_complex_space}    
-%\end{figure}
+\begin{figure}[!ht] 
+	\centering
+	\begin{subfigure}[b]{0.15\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{lab_complex_color}
+		\caption{}	
+		\label{fig:lab_complex_color}
+	\end{subfigure}
+	~%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.15\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{hsl_complex_color}
+		\caption{}	
+		\label{fig:hsl_complex_color}
+	\end{subfigure}
+	~%add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[b]{0.15\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{hsv_complex_color}
+		\caption{ }	
+		\label{fig:hsv_complex_color}
+	\end{subfigure}
+	
+	\caption{Graphic display of tree alternatives to obtain the complex color representation of an image: (a) form LAB color space, (b) from form HSL color space, and (c) from HSV color space.}
+	\label{fig:complex_color_spaces}
+\end{figure}
 
-%Figure \ref{fig:images_color_complex_space} shows the transformation of a natural image (first row of the figure array) from RGB space to complex two-channel color space. Each row in the figure shows the luminance channel and the two parts (real and imaginary) of the chrominance channel. Note that as it happened in the representation of the classic color spaces (figure \ref{fig:images_color_space}) since the method to compute saturation differs in HSV and HSL spaces, the chrominance channel is different. The same effect occurs with the L luminance channel from LAB space and the luminance from the RGB to gray transformation; in theory, both are the same, but we can see differences in practice.
 
 
 \subsection{Synthetic image description}
-The synthetic image we create contains seven different regions with spatial variations (textures) generated by alternating various colors at different frequencies. Each tile of the image is perceived as a whole; this is perceptually a constant region. The colors alternate along different directions in the chrominance phase (Fig. \ref{fig:color_complex_plane}). The last image region has two frequency components.
+The first stage in creating the feature space is transforming the input image from the RGB color space to the two-channel luminance-chrominance space. The representation in two channels, one real and the other complex, of a color image allows us to separate the intervention of luminance and colors in the generation of textures in an image. To help visualize such a joint phenomenon, we create a synthetic image that reflects the complexity of natural color images.
+
+The synthetic image we create contains seven different regions with spatial variations (textures) generated by alternating various colors at different frequencies. Each tile of the image is perceived as a whole; this is perceptually a constant region. The colors alternate along different directions in the chrominance phase (see Fig. \ref{fig:color_complex_plane}). The last image region has two frequency components.
 
 We generate the input image with the sign function of a 2-d sinusoidal signal multiplied by the color values of each region in the RGB color space such that
 \begin{gather}
@@ -1042,7 +993,7 @@ We generate the input image with the sign function of a 2-d sinusoidal signal mu
 
 We control the image texture by varying the frequencies $f_{x}, f_{y}$ and the orientation angle $\theta$ of the coordinate plane $(x, y)$, where $\theta=0^\circ$ means vertical variations and $\theta=90^\circ$ horizontal variations. The proposed image has a size of $320\times1400$ pixels. The seven characteristic regions of the image are spread over $1400$ pixels wide, so each region is about $320\times200$ pixels; that is, the color/texture distribution in the image changes every 200 pixels (on the $x$-axis). The following expressions define the spatial image variations.  
 \begin{gather}
-	f_{x} = 
+	\medmath{f_{x} = 
 	\begin{cases} 
       0    & 0\leq x\leq 200  \\
       1/64 & 201\leq x\leq 400  \\
@@ -1060,7 +1011,7 @@ We control the image texture by varying the frequencies $f_{x}, f_{y}$ and the o
       0    & 801\leq x\leq 1000  \\
       0    & 1001\leq x\leq 1200 \\  
       1/32 & 1201\leq x\leq 1400 \\ 
-   	 \end{cases} \nonumber  
+   	 \end{cases}} \nonumber  
 \end{gather}
 
 For comprehension purposes, we use colors easily identified in the RGB space (primary colors) or in the HSV space (perceptual colors) to generate the image textures. Figure \ref{fig:synthetic_color_texture_image} depicts the resulting synthetic image. 
@@ -1072,41 +1023,51 @@ For comprehension purposes, we use colors easily identified in the RGB space (pr
 
 The 2-d sinusoidal modulations generate textures in the image at different and well-known frequencies. These modulations change the colors of the regions generating a texture of oriented lines. The regions of the synthetic image have the following color and texture characteristics.
 
-\paragraph{Region 1. Textureless zone:}
+\paragraph{Region 1. Textureless zone}
 This region does not contain spatial variations, i.e., it has only a solid color. The color of the region is yellow (arbitrarily chosen).
 
 \paragraph{Region 2. Lowest frequency textured zone with colors on the imaginary plane:}
 This region is described by the vertical texture generated by variations between purple and green lime. Such colors are found in the imaginary axis of the chrominance plane. The colors in this region change every 64 pixels (along the $x$-axis).
 
-\paragraph{Region 3. Textured zone with colors on the real plane:}
+\paragraph{Region 3. Textured zone with colors on the real plane}
 This region contains a vertical texture generated by the variations between red and cyan. Such colors are found in the real axis of the chrominance plane. The colors in this region change every 32 pixels (along the $x$-axis).
 
-\paragraph{Region 4. Textured zone with two primary colors:}
+\paragraph{Region 4. Textured zone with two primary colors}
 The variations between red and blue generate the horizontal texture of this region. The colors in this region change every 16 pixels (along the $x$-axis). 
 
-\paragraph{Region 5. Textured zone with two primary colors:}
+\paragraph{Region 5. Textured zone with two primary colors}
 The variations between blue and green generate the horizontal texture of this region. The colors in this region change every 8 pixels (along the $x$-axis). 
 
-\paragraph{Region 6. Textured zone with two primary colors:}
+\paragraph{Region 6. Textured zone with two primary colors}
 The variations between green and red generate the horizontal texture of this region. The colors change every 4 pixels (along the $x$-axis).
 
-\paragraph{Region 7. Colorless mixed textures zone:}
+\paragraph{Region 7. Colorless mixed textures zone}
 This region contains two textures, both of them formed by the variations between black and white, i.e., there is no color information. Moreover, the textures change in frequency and orientation; the pixes of the horizontal texture change of color every 4 pixels along the $x$-axis (highest frequency), while the pixel values of the vertical texture changes every 16 pixels along the $y$-axis (same frequency as region 4).
 
 We summarize the colors and frequency of each zone in Table \ref{tab:synthetic_image_components}. In the table, we expose the $RGB$ and $HSV$ values of the texture-forming colors as well as the frequency and orientation of each section.
 
-\subsubsection{Graphical Display of the Synthetic Image Color Distribution}
-The choice of texture-forming colors comes from the interest in visualizing the color spectrum of the image more graphically. The two-channel color spaces, described in chapter \ref{ch:color_texure_representations}, encode color information in a complex chrominance channel. Therefore, we can interpret the chrominance values as points within a complex plane (see Fig. \ref{fig:color_complex_plane}). In the case of LAB/LUV spaces, the values of chrominance are defined in Cartesian coordinates as 
-\begin{equation}\label{eq:chrominance_lab2}
-    C = A + \mathsf{i}B
-\end{equation}
-where channel A values represent the real axis coordinates, and channel B values represent the imaginary axis coordinates. 
+\begin{table*}[!h]
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{c|ccccccc}
+                    & \multicolumn{7}{c}{\textbf{Region}}                                                                                                                                                                          \\ \hline
+\textbf{}           & 1                  & 2                   & 3                   & 4                   & 5                   & 6                   & 7                                                              \\ \hline
+\textbf{Color 1}    &                    &                     &                     &                     &                     &                     &                                                                \\
+\textit{Name}       & Yellow             & Purple              & Red                 & Red                 & Blue                & Green               & Black                                                          \\
+\textit{RGB values} & {[}255, 255, 0{]}  & {[}128, 0, 255{]}   & {[}255, 0, 0{]}     & {[}255, 0, 0{]}     & {[}0, 0, 255{]}     & {[}0, 255, 0{]}     & {[}0, 0, 0{]}                                                  \\
+\textit{HSV values} & {[}60, 100, 100{]} & {[}270, 100, 100{]} & {[}0, 100, 100{]}   & {[}0, 100, 100{]}   & {[}240, 100, 100{]} & {[}120, 100, 100{]} & {[}0, 0, 0{]}                                                  \\ \hline
+\textbf{Color 2}    &                    &                     &                     &                     &                     &                     &                                                                \\
+\textit{Name}       & -                  & Green lime          & Cyan                & Blue                & Green               & Red                 & White                                                          \\
+\textit{RGB values} & -                  & {[}128, 255, 0{]}   & {[}0, 255, 255{]}   & {[}0, 0, 255{]}     & {[}0, 255, 0{]}     & {[}255, 0, 0{]}     & {[}255, 255, 255{]}                                            \\
+\textit{HSV values} & -                  & {[}90, 100, 100{]}  & {[}180, 100, 100{]} & {[}240, 100, 100{]} & {[}120, 100, 100{]} & {[}0, 100, 100{]}   & {[}0, 0, 100{]}                                                \\ \hline
+\textbf{Texture}    &                    &                     &                     &                     &                     &                     &                                                                \\
+\textit{Freq.}      & -                  & $1/64$              & $1/32$              & $1/16$              & $1/8$               & $1/4$               & \begin{tabular}[c]{@{}c@{}}$1/8$\\ $1/32$\end{tabular}         \\
+\textit{Angle}      & -                  & $90^\circ$          & $90^\circ$          & $90^\circ$          & $90^\circ$          & $90^\circ$          & \begin{tabular}[c]{@{}c@{}}$0^\circ$\\ $90^\circ$\end{tabular}
+\end{tabular}}
+\caption{Specifications of the color and texture settings for each of the regions within the synthetic image.}\label{tab:synthetic_image_components}
+\end{table*}
 
-HSV/HSL color spaces encode chrominance values as points in polar coordinates 
-\begin{equation}\label{eq:chrominance_hsv2}
-    C = S \mathsf{e}^{\mathsf{i}H}
-\end{equation}
-where channel H values are the angle expressed radians and channel S values are the distance from the origin to the color points.
+\subsubsection{Graphical Display of the Synthetic Image Color Distribution}
+The choice of texture-forming colors comes from the interest in visualizing the color spectrum of the image more graphically. The two-channel color spaces encode color information in a complex chrominance channel. Therefore, we can interpret the chrominance values as points within a complex plane (see Fig. \ref{fig:color_complex_plane}). In the case of LAB/LUV spaces, the values of chrominance are defined in Cartesian coordinates as Eq. \eqref{eq:chrominance_lab} where channel $A$ values represent the real axis coordinates, and channel $B$ values represent the imaginary axis coordinates. HSV/HSL color spaces encode chrominance values as points in polar coordinates as Eq. \eqref{eq:chrominance_hsv} where channel $H$ values are the angle expressed radians and channel $S$ values are the distance from the origin to the color points.
 
 Considering these two chrominance configurations, the one defined by hue and saturation provides a more straightforward geometric interpretation of chrominance. Originally hue is a cylindrical dimension representing the color tints in the chromatic circle as angles, while saturation, which represents the purity of color, places achromatic tints in the center of the circle and pure colors on the circular edge of the disk. In figure \ref{fig:color_complex_plane}, we show the synthetic image color distribution plot using the HS dimensions in the 2-d chrominance complex plane. The hue $H$ is expressed in degrees, and saturation $S$ is normalized between $0$ and $255$. This representation complements the description of our synthetic test image Fig. \ref{fig:synthetic_color_texture_image}, showing the variation between colors that generate textures. We can notice in the chroma circle of figure \ref{fig:color_complex_plane} the transition between the red-green-blue primary colors at $0^\circ$, $120^\circ$ and $240^\circ$ respectively; the transition between purple and lime green on the imaginary axis with a hue of $90^\circ$ and $270^\circ$ respectively; the transition between red at $0^\circ$ and cyan at $180^\circ$ passing through the real axis of the plane and finally; the yellow color with a hue value of $60^\circ$.
 
@@ -1116,9 +1077,9 @@ Considering these two chrominance configurations, the one defined by hue and sat
 	\caption{Synthetic image chrominance distribution represented in the color complex plane.}\label{fig:color_complex_plane}
 \end{figure}
 
-Under this color space configuration, the colors of an image are represented in the complex chrominance plane. However, in this plane, the variations due to luminance information do not appear. The brightness of the colors is captured in the luminance channel. Depending on the color space that we use to build the two-channel color representation, we can obtain the luminance channel differently. In the LAB/LUV and HSL color spaces, the luminance channel is directly represented by the $L$ dimension values. In the HSV color space, we use the image transformation from RGB to gray-scale following the Eq. \eqref{eq:color2gray_formula} to obtain the luminance channel.
+Under this color space configuration, the colors of an image are represented in the complex chrominance plane. However, in this plane, the variations due to luminance information do not appear. The brightness of the colors is captured in the luminance channel. Depending on the color space that we use to build the two-channel color representation, we can obtain the luminance channel differently. In the LAB/LUV and HSL color spaces, the luminance channel is directly represented by the $L$ dimension values. In the HSV color space, we use the image transformation from RGB to gray-scale to obtain the luminance channel (see Fig. \ref{fig:complex_color_spaces}).
 
-Figure \ref{fig:three_channel_decomposition} shows the three dimensions of the two-channel representation of the synthetic image ($L(x,y)$, $\RE(C(x,y))$, $\IM(C(x,y))$) in grayscale. In this representation, we use the HSV color space as a basis to obtain the luminance and chrominance values, so the $L$ channel is obtained with Eq. \eqref{eq:color2gray_formula} and the $C$ channel with Eq. \eqref{eq:chrominance_hsv2}. In figure \ref{fig:three_channel_decomposition}, we can see how the different regions show more or less important values depending on the channel in which they are. For example, the horizontal and vertical spatial variations of region 7 (between 1200 and 1400 column pixels) are only visible in the luminance channel $L(x,y)$ (see left image in \ref{fig:three_channel_decomposition}). We observe this same effect in the chrominance channels, for example, with the vertical textures of region 3. The spatial variations of this region are made up by the alternation of colors that live only in the real plane of chrominance (red and cyan), so the texture is only visible in channel $\RE(C(x,y))$ (see column pixels between 400 and 600 of the central image and the image to the right of subfigure \ref{fig:three_channel_decomposition}). 
+Figure \ref{fig:three_channel_decomposition} shows the three dimensions of the two-channel representation of the synthetic image ($L(x,y)$, $\RE(C(x,y))$, $\IM(C(x,y))$) in grayscale. In this representation, we use the HSV color space as a basis to obtain the luminance and chrominance values, so the $L$ channel is obtained with Eq. \eqref{eq:color2gray_formula} and the $C$ channel with Eq. \eqref{eq:chrominance_hsv}. In figure \ref{fig:three_channel_decomposition}, we can see how the different regions show more or less important values depending on the channel in which they are. For example, the horizontal and vertical spatial variations of region 7 (between 1200 and 1400 column pixels) are only visible in the luminance channel $L(x,y)$ (see left image in \ref{fig:three_channel_decomposition}). We observe this same effect in the chrominance channels, for example, with the vertical textures of region 3. The spatial variations of this region are made up by the alternation of colors that live only in the real plane of chrominance (red and cyan), so the texture is only visible in channel $\RE(C(x,y))$ (see column pixels between 400 and 600 of the central image and the image to the right of subfigure \ref{fig:three_channel_decomposition}). 
 
 We can also visualize the color variations and their influence on the generation of textures by plotting a horizontal line using a row of pixels' intensity values for each dimension of the two-channel space. In figure \ref{fig:horizontal_line_three_channel_decomposition}, we show the variations generated by changes in color and (or) lightness in a 1-d plot. Taking the area without texture (region 1), the horizontal line between pixels 0 and 200 remains constant in all three channels due to the absence of texture. However, in region 2, which corresponds to the low-frequency texture formed by the colors at $90^\circ$ and $270^\circ$ in the chroma circle, we see that variations are only present in the imaginary channel of chrominance $\IM(C(x,y))$. In regions 4, 5, and 6, since the texture-forming colors are two of the three primary colors (red, green, blue), the variations are visible in all three luminance-chrominance representation channels. Finally, in the last region (colorless mixed textures zone), we can see that the variations are only present in the channel that describes the luminance $L(x,y)$.
 
@@ -1128,6 +1089,121 @@ We can also visualize the color variations and their influence on the generation
     \subcaptionbox{\label{fig:horizontal_line_three_channel_decomposition}}{\includegraphics[width=0.5\textwidth]{horizontal_line_three_channel_decomposition}}    
 \caption{Illustration of the proposed synthetic image: (a) Luminance and chrominance decomposition; (b) Numerical values on a horizontal line cut through the three channels.}\label{fig:three_channel_decomposition}
 \end{figure}
+
+\subsection{Spectral Image Decomposition}
+The first stage of our methodology for color-textured images' characterization consists of representing the input image in a two-channel luminance and chrominance space. Once we represent the image in this space, we obtain the spectral decomposition of each image dimension using a family of optimized Gabor filters. Following this strategy, we measure the spatial variations generated by luminance and chrominance individually. 
+
+%\begin{figure}[!ht]
+%    \centering
+%    \includegraphics[width=0.6\textwidth]{GaborFilterbank_5f_4a}
+%    \caption{Gabor filter bank with filters at five frequencies $f$ and four orientations $\theta$ used to model the synthetic image textures.}\label{fig:gabrfilter_5f_4a}    
+%\end{figure}
+
+Among the different strategies to model the texture information with the Gabor filters listed above, we used the amplitude filter response Eq. \eqref{eq:gabor_magnitude} such that
+\begin{equation}\label{eq:gabor_energy}
+	e_{c, f, \theta}(x,y) = |r_{c, f, \theta}(x,y)|
+\end{equation}
+represents the Gabor energy captured by a Gabor filter set at frequency $f$ and orientation $\theta$ for every color channel  $c=\{L, \RE(C), \IM(C)\}$. 
+
+The responses generated by Eq. \eqref{eq:gabor_energy} represent the raw Gabor responses, that is, without any post-processing. Although the Gabor filters we use are optimized to capture the most information by reducing the trade-off between the spatial-frequency domains, the raw responses lack homogeneity, especially at low frequencies, where the filter support is longer. Figure \ref{fig:synthetic_img_gresponses} shows the raw Gabor responses at different frequencies and orientations of the channels of the luminance-chrominance space. 
+
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}   
+        \includegraphics[width=\textwidth]{gabor_resp_lum_synthetic}
+        \caption{$e_{L, f, \theta}(x,y)$} 
+        \label{fig:lum_raw_gabor_energies}
+    \end{subfigure} \\ [2ex]   
+    \begin{subfigure}[b]{0.45\textwidth}   
+    	\includegraphics[width=\textwidth]{gabor_resp_cr_synthetic}
+    	\caption{$e_{\RE(C), f, \theta}(x,y)$}
+        \label{fig:cr_raw_gabor_energies}
+    \end{subfigure} \\ [2ex]    	
+    \begin{subfigure}[b]{0.45\textwidth}  
+        \includegraphics[width=\textwidth]{gabor_resp_ci_synthetic}
+        \caption{$e_{\IM(C), f, \theta}(x,y)$}
+        \label{fig:ci_raw_gabor_energies} 
+    \end{subfigure} 
+    	    
+    \caption{Gabor responses of the synthetic image obtained with a filter bank of 5 frequencies and 4 orientations. \captext{(a)} Luminance channel responses, \captext{(b)} Real part of chrominance channel responses, \captext{(c)} Imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses}    
+\end{figure}
+
+The raw response images are organized as a matrix arrangement that follows the same structure as the Gabor family of filters. The rows in the array represent the responses to the bank's different frequencies (the frequency increases from bottom to top). The array columns represent the responses to the bank's different orientations; from left to right, $\theta$ varies between $ 0^\circ $ $180\circ$ at equidistant intervals. 
+
+In the raw Gabor response array images, the zones are brightened more or less depending on the information of the regions. A high level of brightness indicates more energy recovered by the Gabor filter at that frequency and orientation. For example, analyzing the responses of the first column of the luminance channel arrangement, they show how the areas light up as the filter frequency changes. The textures' frequency in the synthetic image increases from left to right, while the filter bank's frequency increases from the bottom up, which generates this staircase effect of illuminated areas in the first column of images in subfigure \ref{fig:lum_raw_gabor_energies}.
+
+This same effect is seen when analyzing region 7 of the synthetic image (the region with mixed textures at different frequencies and orientations between column pixels 1200 and 1400). The textures of such a region are formed by alternating black and white pixels, so all their information is in the luminance channel $L(x, y)$. The vertical texture of the region has frequency $f = 1/8$ and orientation $\theta = 0^\circ$ while the horizontal texture has frequency $f = 1/32$ and orientation $\theta = 90^\circ$. Under this configuration, the response images that reflect the texture information are the image in row 1, column 3  (from bottom to top and left to right) for the horizontal texture and; the response image in row 4, column 1 for the vertical texture. Note that in row 4 of the responses array (corresponding to the frequency $f = 1/8$), we see that region 5 is illuminated with the same intensity as region 7, which indicates that both zones contain textures at that frequency. This information is consistent with the description of the regions of our synthetic image.
+
+Another interesting thing visible in the Gabor responses is that region 1 of the synthetic image (region without texture between pixels 0 and 200) does not illuminate any channel or any frequency or orientation of the filters. This effect occurs because Gabor filters only retrieve the texture information of the image. Color information is implicit in the chrominance channel. We see this reflected in the responses of the real and imaginary channels of the chrominance subfigures \ref{fig:cr_raw_gabor_energies}, \ref{fig:ci_raw_gabor_energies}. 
+
+
+\subsubsection{Refinement of Gabor responses}
+
+Although the raw Gabor responses are a good starting point for describing textures, these responses exhibit a lack of spatial homogeneity generated by the trade-off between the spatial-frequency domains of the Gabor filters. Clearly, this behavior is more visible at high frequencies, where the support of Gabor filters is smaller. For example, in the responses of the imaginary channel of the chrominance corresponding to the frequency $f=1/8$ and orientation $\theta = 0^\circ$ (response image at row 1 column 1 in subfigure \ref{fig:ci_raw_gabor_energies}, we see how the energy found by the filter for the region 4 (between pixels 400 and 600) is not homogeneous, and the lines texture effect keeps appearing.
+
+In the literature, there are various strategies to homogenize the filter responses; one of them very recurrent is the application of a non-linear transformation \cite{Jain.Farrokhnia:IJPR:1991}. This non-linear transformation acts as the bounded sigmoid activation function used in artificial neural networks. The non-linear transformation modulates the sinusoidal signals of the image to square signals, so it behaves like a blob detector. The downside to this approach is that we need to define an empirical parameter that functions as a threshold for the transformation.
+
+We propose to use a morphological opening to achieve homogenization of the Gabor responses. The opening is defined as
+\begin{equation}\label{eq:gabor_energy_opn}
+	\widehat{e}_{c, f, \theta}(x,y) = \gamma_B(e_{c, f, \theta}(x,y)) 
+\end{equation}
+where $B$ is the structuring element and $\gamma_B$ is the morphological opening. Our approach's advantage is that the structural element's size is defined individually for each Gabor energy by the central period $ T=1 / f $ of each filter. For example, the radius of a disk-shaped structuring element for the Gabor energies obtained with a filter with a center frequency $ f = 1/8 $ is 8 pixels. 
+%Gabor responses after morphological opening appear in the figure \ref{fig:synthetic_img_gresponses_opn}.
+%\gamma_B(e_{c, f, \theta}(x,y)) = \delta_B[\varepsilon_B(e_{c, f, \theta}(x,y)] defined as an erosion followed by a dilation using the same structuring element $B$ for both operations.
+%\begin{figure}[!ht]
+%    \centering
+%    \begin{subfigure}[b]{\textwidth}   
+%        \includegraphics[width=\textwidth]{gabor_resp_lum_synthetic_opn}
+%        \caption{$\widehat{e}_{L, f, \theta}(x,y)$} 
+%        \label{fig:lum_gabor_energies_opn}
+%    \end{subfigure} \\ [2ex]   
+%    \begin{subfigure}[b]{\textwidth}   
+%    	\includegraphics[width=\textwidth]{gabor_resp_cr_synthetic_opn}
+%    	\caption{$\widehat{e}_{\RE(C), f, \theta}(x,y)$}
+%        \label{fig:cr_gabor_energies_opn}
+%    \end{subfigure} \\ [2ex]    	
+%    \begin{subfigure}[b]{\textwidth}  
+%        \includegraphics[width=\textwidth]{gabor_resp_ci_synthetic_opn}
+%        \caption{$\widehat{e}_{\IM(C), f, \theta}(x,y)$}
+%        \label{fig:ci_gabor_energies_opn} 
+%    \end{subfigure} 
+%    	    
+%    \caption{Gabor responses after the morphological openning of the synthetic image. \captext{(a)} Luminance channel responses, \captext{(b)} Real part of chrominance channel responses, \captext{(c)} Imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses_opn}    
+%\end{figure}
+
+Finally, after the morphological opening, we apply an adaptive Gaussian smoothing to calculate the Gabor energy locally. This smoothing is defined as 
+\begin{equation}\label{eq:gabor_energy_smth}
+	\widetilde{e}_{c, f, \theta}(x,y) = w(x, y)_\sigma\ast \widehat{e}_{c, f, \theta}(x,y)
+\end{equation}
+where the scale parameter $\sigma$ of the Gaussian window $W(x,y)_\sigma$ is the maximum between value between the standard deviations of the Gabor filter support in the $x$ and $y$ axis.
+\begin{equation}\label{eq:gauss_sigma_smth}
+	\sigma = \mathrm{max}(\sigma_x, \sigma_y)
+\end{equation}
+
+From the analysis of Gabor filters presented in section \ref{sec:gabor_filter_description}, we know that the standard deviations $\sigma_x, \sigma_y$ (Eq. \eqref{eq:1D_Gaussian_envelope_width}) of a Gabor filter are defined by its center frequency $f$ and the frequency and angular point crossing points (Eqs. \eqref{eq:frequency_crossing_point}, \eqref{eq:angular_crossing_point}) defined at the moment of filter bank design. 
+%Figure \ref{fig:synthetic_img_gresponses_opn_smth} shows the Gabor responses after opening and adaptive Gaussian smoothing. 
+
+%\begin{figure}[!ht]
+%    \centering
+%    \begin{subfigure}[b]{0.45\textwidth}   
+%        \includegraphics[width=\textwidth]{gabor_resp_lum_synthetic_opn_smth}
+%        \caption{$\widetilde{e}_{L, f, \theta}(x,y)$} 
+%        \label{fig:lum_gabor_energies_opn_smth}
+%    \end{subfigure} \\ [2ex]   
+%    \begin{subfigure}[b]{0.45\textwidth}   
+%    	\includegraphics[width=\textwidth]{gabor_resp_cr_synthetic_opn_smth}
+%    	\caption{$\widetilde{e}_{\RE(C), f, \theta}(x,y)$}
+%        \label{fig:cr_gabor_energie_opn_smth}
+%    \end{subfigure} \\ [2ex]    	
+%    \begin{subfigure}[b]{0.45\textwidth}  
+%        \includegraphics[width=\textwidth]{gabor_resp_ci_synthetic_opn_smth}
+%        \caption{$\widetilde{e}_{\IM(C), f, \theta}(x,y)$}
+%        \label{fig:ci_gabor_energies_opn_smth} 
+%    \end{subfigure} 
+%    	    
+%    \caption{Gabor responses after morphological openning and Gaussian smoothing of the synthetic image. (a) luminance channel responses, (b) real part of chrominance channel responses, (c) imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses_opn_smth}    
+%\end{figure}
+
 
 
 \section{High-level Texture Features}\label{sec:high_level_features}
