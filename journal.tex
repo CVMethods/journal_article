@@ -329,9 +329,13 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Gabor-filter-based Complex Color Feature Space}
+%\title{Gabor-filter-based Complex Color Feature Space}
 %\title{Multi-spectral Color Image Representation}
 %\title{Multi-spectral Complex Color Image Representation} 
+\title{Multi-spectral Image Representation for Image Segmentation Tasks} 
+%\title{Multi-spectral Image Representation for Segmentation Tasks and High-level Texture Features} 
+%\title{Perceptual Image Analsys Based on Multi-spectral Image Decomposition} 
+
 %
 %
 % author names and IEEE memberships
@@ -421,31 +425,31 @@ Gabor filter, multi-spectral decomposition, image representation, image contours
 
 \section{Introduction}
 
-\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
-for IEEE journal papers produced under \LaTeX\ using
-IEEEtran.cls version 1.8b and later.
+%\IEEEPARstart{T}{his} demo file is intended to serve as a ``starter file''
+%for IEEE journal papers produced under \LaTeX\ using
+%IEEEtran.cls version 1.8b and later.
+%
+%A couple of ideas to develop the introduction of the paper:
+%\begin{enumerate}
+%	\item Methodology for the interpretation of perceptual information of an image. This results in an image feature space that serves as a base to develop several image processing task:
+%	\begin{itemize}
+%		\item Image segmentation from clusterting techniques
+%		\item Image contour detection using the EMD on a graph structute (pixel or superpixel level)
+%		\item Image segmentation from detected contours using hirarchical methods
+%		\item High-level texture features
+%	\end{itemize}	 
+%	
+%	\item Methodology for image contour detection based on the complex multi-spectral decomposition of the image. This approach in an image feature space that contains the perceptual information of the image. We can explode this information in several ways:
+%	\begin{itemize}
+%		\item Image contour detection using the EMD on a graph structute (pixel or superpixel level)
+%		\item Image segmentation from detected contours using hirarchical methods
+%		\item Image segmentation from clusterting techniques
+%		\item High-level texture features
+%	\end{itemize}	
+%\end{enumerate}
 
-A couple of ideas to develop the introduction of the paper:
-\begin{enumerate}
-	\item Methodology for the interpretation of perceptual information of an image. This results in an image feature space that serves as a base to develop several image processing task:
-	\begin{itemize}
-		\item Image segmentation from clusterting techniques
-		\item Image contour detection using the EMD on a graph structute (pixel or superpixel level)
-		\item Image segmentation from detected contours using hirarchical methods
-		\item High-level texture features
-	\end{itemize}	 
-	
-	\item Methodology for image contour detection based on the complex multi-spectral decomposition of the image. This approach in an image feature space that contains the perceptual information of the image. We can explode this information in several ways:
-	\begin{itemize}
-		\item Image contour detection using the EMD on a graph structute (pixel or superpixel level)
-		\item Image segmentation from detected contours using hirarchical methods
-		\item Image segmentation from clusterting techniques
-		\item High-level texture features
-	\end{itemize}	
-\end{enumerate}
 
-
-Gabor filters have long been used for analyzing textures and extracting corresponding image features. Its adaptability and customization, depending on the application and the relationship with the human visual system  \cite{Daugman:JOSA:1985}, have made this technique one of the most relevant for analyzing textures in an image. 
+\IEEEPARstart{G}abor filters have long been used for analyzing textures and extracting corresponding image features. Its adaptability and customization, depending on the application and the relationship with the human visual system  \cite{Daugman:JOSA:1985}, have made this technique one of the most relevant for analyzing textures in an image. 
 
 The use of Gabor filters for image texture analysis is highly dependent on the final application. Some of the most recognized works in the literature date back to the late 90s, where this technique was a hot research topic for image texture analysis. However, regarding the works present in the literature, we can separate the methods taking into account the nature of the extracted features. The first group uses Gabor filters to extract a global texture descriptor (Gabor signature). Generally, this strategy is suitable for applications where the images contain homogeneous textures, and it is sought to make the classification of images or an image retrieval system based on the content. The second group is characterized by using Gabor filters to obtain local texture features present in an image. Such a strategy is suitable for image segmentation tasks. This paper addresses the second case straightforwardly and comprehensively, delving into the spectral decomposition of color images to obtain texture features generated by the changes in illumination and (or) color.
 
@@ -519,106 +523,7 @@ The methodology we present in this paper mainly follows the stages shown in the 
 	\caption{General pipeline for extraction of perceptual image boundaries and unsupervised image segmentation.}\label{fig:pipeline_gabor_image_segmentation}
 \end{figure}
 
-\subsection{Related works}
 
-\subsubsection{Image boundaries}
-Edge detection is a fundamental problem of computer vision that has been intensively studied since the early 1970s \cite{Hueckel:JACM:1971, Fram.Deutsch:TC:1975}. The main idea behind traditional approaches to contour extraction is to model edges as discontinuities in the brightness channel of an image. This idea gave way to the creation of mask-based operators such as Sobel \cite{Sobel.Feldman:SAIL:1990}, Roberts \cite{Roberts:Thesis:1963}, Gradient \cite{Maitre:Book:2003} and Prewitt \cite{Prewitt:PPP:1970}, which quantify the presence of an edge through the convolution of a gray level image with local derivative filters. Other techniques, such as Marr and Hildreth \cite{Marr.Hildreth:PRS:1980}, define edges as the zero crossings of the Laplacian of a Gaussian (LoG). The Canny operator \cite{Canny:PAMI:1986} is one of the most popular approaches to this day within traditional methods. This operator follows the same operation principle of the previous methods, adding a non-maximum suppression stage and hysteresis thresholding. 
-
-Despite their efficiency in controlled environments or synthetic images, traditional methods suffer from identifying contours in natural images. The edges of natural images can be present at different scales, and the colors and textures of the scene can generate edges that are perceptually significant to the human eye. Ideally, a contour detection method is intended to simultaneously exploit the brightness, color, and texture properties of an image so that it can handle the boundary perimeters defined by the brightness steps and the regions with consistent color and (or) texture.
-
-One of the relatively recent strategies for identifying perceptual contours is to use the local energy response of an image. The operation principle is simple: generate features from the responses of an image produced by a family of filters at different scales and orientations. The idea has been exploited from different points of view. For example, the use of the Difference of Gaussians (DoG) and its Hilbert transform \cite{Morrone.Owens:PR:1987, Morrone.Burr.ea:RSL:1988} to generate a family of filters. Inspired by Gabor's work, this group of filters comply with the Parseval principle and generate an exact quadrature pair (even and odd symmetry cells). 
-
-The \textit{Probability-of-boundary} (Pb) detector \cite{Malik.Belongie.ea:IJCV:2001} is one of the principal exponents of using a filter bank formed by the DoG and its Hilbert transform. The contour detector only uses the brightness and texture information to obtain the Pb. The brightness information is processed following the intervening contour framework \cite{Leung.Malik:ECCV:1998}, which consists of obtaining the image's quadrature energy, also called oriented energy (OE). The texture information is analyzed using so-called textons \cite{Malik.Belongie.ea:ICCV:1999}. Since each cue (brightness and texture) has a domain of applicability, hence different units of magnitude, they introduce a gating operator based on a neighborhood's texturedness at a pixel. The operator gives, as a result, a local measure that indicates how much two nearby pixels are to belong to the same region. Later in that work, they use spectral graph theory (normalized cut algorithm \cite{JianboShi.Malik:PAMI:2000}) to segment the image into coherent texture and brightness regions. 
-
-This contemporary method, developed by the UC Berkeley research group, was the basis for many other techniques for contour detection and segmentation of natural images widely used today. Most of these works bring substantial improvements to the Pb detector. For example, the seminal papers \cite{Martin.Fowlkes.ea:NIPS:2002} and \cite{Martin.Fowlkes.ea:PAMI:2004} bring together previous works related to Pb and obtain a feature space of four image characteristics: localized OE, Brightness Gradient (BG), Color Gradient (CG), and localized Texture Gradient (TG). To cope with the difference in units of the magnitude of the cues, they use a logistic regression classifier to combine oriented energy, brightness, color, and texture. The proposed supervised method optimizes each feature's weights, formulating it as a two-class classification problem, where they learn the rules for combining cues from the ground truth data of the Berkeley Segmentation Dataset (BSDS) \cite{Martin.Fowlkes.ea:ICCV:2001}.
-
-On the other hand, \cite{Ren:ECCV:2008} showed that the Pb detector improves when using features of the image calculated at different scales. However, a better version of the Pb detector, which has dominated the state of the art scores for several years, is obtained by combining local and global contours \cite{Maire.Arbelaez.ea:CVPR:2008}. The local contours are represented by the multiscale oriented signal mPb, while the global contours are represented by the oriented signal from the spectral partition sPb. The final detector that combines both signals is the globalized Probability-of-boundary gPb, which learns the local and global part's weights through an ascending gradient, taking as reference the BSDS evaluation score.
-
-The Berkeley research group laid the foundation for contour detection and natural image segmentation, providing quantitative comparison methods. However, there are other methods in the literature that use different strategies to calculate image features and detect contours. Such methods can usefully supervise approaches, avoiding the careful hand-drawing of texture and gloss gradients. However, we can also find semi-supervised methods that replace the Pb detector to apply later a pre-processing chain similar to that applied in the Berkeley group methods.
-
-The Berkeley research group laid the foundation for contour detection and natural image segmentation, providing the database and tools for the comparison and quantitative evaluation of the different approaches. Furthermore, Pb has motivated the development of state-of-the-art methods that use different strategies to obtain image features and contour detection. Such methods can use supervised approaches, avoiding careful filter design, computation of texture and brightness gradients, and hand-crafted features. We can also find semi-supervised methods, which generally replace the Pb detector with a supervised detector to apply later a pre-processing chain similar to that applied in the Berkeley group methods to refine the detection.
-
-The set of the most popular supervised methods for contour detection, led by researchers from the University of Pasadena California and colleagues, is based on the calculation of features on channels of integrals of the image \cite{Dollar.Tu.ea:BMVC:2009}. Some examples of these integral channels are image color and gray channels, image responses to linear filters (e.g., Gabor filters, DoG), non-linear image transformations (e.g., Canny edges, gradient magnitude, hysteresis threshold), among others. The calculation of features on the integral channels follows the object detection framework of \cite{Viola.Jones:IJCV:2004}, obtaining first-order and higher-order features such as Haar-like features. Following this principle, a pool of features is obtained by randomly choosing both the integral channel and a rectangle where the features are calculated, allowing the acceleration of the computation of features and boosting learning techniques. 
-
-Some of the supervised edge detectors that use the integral channel features as input are the Boosted Energy Learning (BEL) \cite{Dollar.ZhuowenTu.ea:CVPR:2006}, which attempts to learn an edge classifier in the form of a probabilistic boosting tree from the thousands of simple features calculated in image patches. On the other hand, Sketch tokens \cite{Lim.Zitnick.ea:CVPR:2013} uses the same features as input to a random forest classifier. The peculiarity of this second method is that the classes of the classifier are the so-called sketch tokens; mid-level information patches that represent complex shapes such as joints, corners, vertical and horizontal edges, calculated from the contours of the ground truth. The Structural Edge (SE) detector \cite{Dollar.Zitnick:ICCV:2013} and its different versions \cite{Dollar.Zitnick:PAMI:2015} take these strategies to another level, learning not only the integral input features but also the output space, using structured-output decision forests. The Oriented Edge Forest (OEF) detector \cite{Hallman.Fowlkes:CVPR:2015} outperforms existing supervised methods using a decision forest that analyzes local patches and outputs probability distributions over the space of oriented edges passing through the patch. On the other hand, \cite{Kivinen.Williams.ea:PMLR:2014} propose a fully supervised method (DeepNet) that does not use the framework of the integral features; instead, it calculates complex-cell like covariance features from multiple scales and semantic levels, which depend on the squared response of a filter to the input image. The Object-Contextual Representations (OCR) \cite{Yuan.Chen.ea:arXiv:2021} learns object regions and the relation between each pixel and each object region, augmenting the representation pixels with the object-contextual representation. The Convolutional Oriented Boundaries (COB) \cite{Maninis.Pont-Tuset.ea:ECCV:2016, Maninis.Pont-Tuset.ea:PAMI:2018} produces image contours and region hierarchies starting from generic image classification. Finally, the \cite{Kelm.Rao.ea:CAIP:2019} propose the RefineContourNet, a model based on the ResNet architecture that surpases the state-of-the-art BSDS500 benchmark. 
-
-Another group of approaches to contour detection are those based on sparse local coding. Such techniques are said semi-supervised because they contain two main stages, one unsupervised and the other supervised. The first stage consists of obtaining a generic representation (without information of the contours) from the image's information in an unsupervised way. The second stage consists of transforming the sparse representation of the image into a classification task, wherein the case of contours detection is a two-classes supervised problem to label the pixels as a contour or no contour. Some renowned works under this approach are the detector proposed by \cite{Mairal.Leordeanu.ea:ECCV:2008} and the Sparse Code Gradients (SCG) detector \cite{Ren.Bo:NIPS:2012}. Both works use K-SVD as a dictionary learning algorithm and Orthogonal Matching Pursuit for efficient optimization and sparse coding of each pixel. At the end of the process, they use SVM as a linear classifier on the feature vectors resulting from the reconstruction error with each dictionary for pixel classification. The main difference between these detectors is that the SCG adopts the same scheme as the Pb detector, replacing the brightness, color, and texture gradients with sparse code gradients. Finally, the Sparse Code Transfer (SCT) detector \cite{Maire.Yu.ea:ACCV:2014} improves on the detector of \cite{Mairal.Leordeanu.ea:ECCV:2008} using a larger number of dictionaries at different scales and layers in addition to the multipath sparse coding technique, which rectifies the initial sparse codes to reconstruct the contours with an extra transfer dictionary. The main disadvantage of these semi-supervised methods is the computational time of both processes, dictionary calculation, and learning. 
-
-
-
-\subsubsection{Image segmentation}
-There is a fine line between contour detection and image segmentation. In this sense, the Pb contour detector has also influenced image segmentation. The Ultrametric Contour Maps (UCM) \cite{Arbelaez.Maire.ea:PR:2009} uses the gPb to define a measure of dissimilarity (ultrametric distance) between pairs of adjacent regions defined by a hierarchical segmentation operator (HSO). This technique is refined by adding a supplementary pre-processing stage using the oriented watershed transform (OWT), giving rise to the gPb-owt-ucm hierarchical segmentation method \cite{Arbelaez.Maire.ea:PR:2009}. The extensive qualitative and quantitative comparison of these techniques can be consulted in \cite{Arbelaez.Maire.ea:PAMI:2011}.
-
-The Pb contour detector has driven (directly or indirectly) 50 years of research work around perceptual contours detection in natural images and their segmentation. Like the Canny operator, the Pb operator has become a reference work. The importance of this method is that it provides a reasonable basis that considers human perception principles, using operators that have a physical sense. 
-
-\subsection{Bechmark}
-
-\subsubsection{Berkely Segmentation Image Data Set}
-The Berkely Database for Segmentation (BSDS) is one of the gold standards for segmentation results \cite{Martin.Fowlkes.ea:ICCV:2001}. The BSDS comprises images from the Corel database selected under a simple criterion: choose images of complex and natural scenes containing at least one distinguishable object. Under this criteria, selected images contain multiple cues for human segmentation, for example, low-level cues such as coherence of brightness, texture, color, and contour continuity; mid-level cues such as symmetry, convexity, and area of the regions; as well as high-level cues based on the semantics of the image objects.
-
-There are two versions of this database. The first one (BSDS300) contains 300 images, while the second (BSDS500) contains 500 images. Each image in the database contains between 5 and 11 human-made segmentations. The instruction given to the observers to naturally break the scene is simple:
-\begin{displayquote}
-Divide each image into pieces, where each piece represents a distinguished thing in the image. It is important that all of the pieces have approximately equal importance. The number of things in each image is up to you. Something between 2 and 30 should be reasonable for any of our images \cite{Martin.Fowlkes.ea:ICCV:2001}.
-\end{displayquote}
-Following these instructions, most segmentations meet the criterion of the number of segments; however, we can also find exceptions with more than 50 segmented things.
-
-Finally, both databases (BSDS300 and BSDS500) contain segmentations of gray level and color images. Since in this chapter we analyze the color textures, we mainly use the BSDS500 color images with their respective segmentations to evaluate our segmentation results. Figure 3 shows some examples of images from the BSDS500 and the segmentations produced by different humans.
-
-\subsubsection{Precision and Recall Scores}
-We use the human-generated segmentations of the BSDS500 as ground truth (GT), applying the precision-recall framework of \cite{Martin.Fowlkes.ea:PAMI:2004}. The precision is the fraction of detections that are true positives rather than false positives, while the recall is the fraction of true positives that are detected rather than missed. This evaluation framework is generally applied to evaluate contour detection algorithms. Therefore, applied in the image segmentation task, the framework involves evaluating the boundaries of the segmentation resulting regions, considering the detected boundaries pixels as a two-classes classification problem (contour and non-contour pixels). Under this configuration, precision is translated as the number of pixels correctly labeled as belonging to the contour class (true positives) divided by the total number of pixels labeled as contours (the sum of true positives and false positives). The recall in this context is defined as the number of true positives divided by the sum of true positives and the pixels which were not labeled as contours but should have been (false negatives). The following mathematical expressions define precision and recall.
-
-\begin{equation}\label{eq:precision_score}
-    \text{precision} = \frac{tp}{tp+fp}
-\end{equation}
-
-\begin{equation}\label{eq:recall_score}
-    \text{recall} = \frac{tp}{tp+fn}
-\end{equation}
-
-A simple metric that captures the trade-off between precision and recall is the f-measure, which is defined as the harmonic mean between the two scores.
-
-\begin{equation}\label{eq:f_score}
-    \text{F-measure} = \frac{2 \times \text{precision}\times\text{recall}}{\text{precision} + \text{recall}}
-\end{equation}
-We use the benchmark for contour detection and image segmentation of the BSDS. This benchmark uses the precision and recall scores described in chapter \ref{ch:complex_spectral_image_decomposition} (cf. subsection \ref{subsec:quantitative_evaluation}). In addition to these scores, the BSDS benchmark uses the following measures and tools to compare results in contour detection and image segmentation.
-
-
-\subsubsection{Optimal Dataset Scale (ODS), Optimal Image Scale (OIS)}
-
-A hierarchical segmentation method applied on an image provides a hierarchy $(H, \lambda)$, where the successive ultrametric levels $(\lambda_1, \cdots , \lambda_N )$ correspond to a series of nested segmentations $(S_1, \cdots , S_N )$. To properly evaluate it, one has to compute the score$(S_i , GT )$ for any level $\lambda_i$ of each image's hierarchy. We can then either retain the best $\lambda$-level on the overall dataset, and the corresponding score is the Optimal Dataset Scale (ODS), or retain the best level $\lambda_i$ for each image and average the best individual scores for all images, which correspond to the Optimal Image Scale (OIS). By definition, the ODS is inferior or equal to the OIS. For a gradient image, the levels $\lambda_i$ correspond to the threshold values at which the image contours are evaluated.
-
-\subsubsection{Precision-Recall curve and Average Precision (AP)}
-
-A precision-recall curve (PRC) is a graph that shows the relationship between precision (positive predictive value) in the x-axis, and recall (sensitivity), in the y-axis, for every possible cut-off. The cut-offs for a gradient image are the threshold values at which the image contours are evaluated. Every point on the PRC represents a chosen cut-off; therefore, what we can see in the graph is the precision and the recall we get when choosing a cut-off. The average precision (AP) on the full recall range is equivalent to the area under the precision-recall curve.
-
-\subsubsection{Segmentation Covering (SC)}
-
-The Segmentation Covering is a measure introduced by \cite{Arbelaez.Maire.ea:PR:2009} that we can see as the generalization of the classic overlap measure between two regions $R$ and $R'$ defined as
-\begin{equation}
-	O(R, R') = \frac{R \cap R'}{R \cup R'}
-\end{equation}
-
-The Segmentation Covering (SC) extends the overlap measure so that the covering of a segmentation $S$ by a segmentation $S'$ is defined as 
-\begin{equation}
-	SC(S' \rightarrow S) = \frac{1}{N}\sum_{R \in S} |R| \cdot \underset{R' \in S'}{\mathrm{max}} O(R, R')
-\end{equation}
-where $N$ denotes the total number of pixels in the image and $\mathcal{O}$ denotes the overlap between two regions $R$ and $R'$.
-
-In the case of a family of multiple image ground-truth segmentations $\{GT_i\}$ f, the covering of a machine segmentation $S$ is defined by first covering $S$ individually for each human segmentation $GT_i$, and then averaging over the different humans. If the machine segmentation explains all of the human data, it achieves a perfect covering score.
-
-\subsubsection{Probabilistic Rand Index (PRI)}
-The Rand Index has initially been introduced for clusterings evaluation. It operates by comparing the compatibility of assignments between pairs of points in the compared clusters. The Rand Index between a machine segmentation $S$ and a ground-truth $GT$ is the sum of the number of pixels pairs with the same labels in $S$ and $GT$, and of those with different labels in the two segmentations, divided by the total number of pixels pairs. The Probabilistic Rand Index (PRI) \cite{Unnikrishnan.Pantofaru.ea:CVPR:2005} is a variant introduced for the case when multiple ground truths are available. If we consider a set of ground-truth segmentations $\{GT_k\}$, the PRI is given by:
-\begin{equation}
-	PRI(S, \{GT_k\}) = \frac{1}{T}\sum_{i<j} [c_{ij}p_{ij} + (1-c_{ij})(1-p_{ij})]
-\end{equation}
-where $c_{ij}$ is the event the pixels $i$ and $j$ have the same label and $p_{ij}$ its probability. $T$ is the total number of pixel pairs.
-
-\subsubsection{Variation of Information(VI)}
-The Variation of Information (VI) is also a measure that has been introduced to compare clusterings \cite{Meila:LTKM:2003}. It measures the distance between two segmentations relatively to their average conditional entropies given by:
-\begin{equation}
-	VI(S, S') = H(S) + H(S') - 2I(S, S')
-\end{equation}
-where $H$ and $I$ respectively represent the entropies and mutual information between two data clusterings $S$ and $S'$. In our case, these clusterings are the test and ground-truth segmentations.
 
 
 \section{Gabor Filters for Full Image Spectrum Coverage}\label{sec:gabor_filter_description}
@@ -1187,7 +1092,7 @@ The responses generated by Eq. \eqref{eq:gabor_energy} represent the raw Gabor r
         \label{fig:ci_raw_gabor_energies} 
     \end{subfigure} 
     	    
-    \caption{Gabor responses of the synthetic image obtained with a filter bank of 5 frequencies and 4 orientations. \captext{(a)} Luminance channel responses, \captext{(b)} Real part of chrominance channel responses, \captext{(c)} Imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses}    
+    \caption{Gabor responses of the synthetic image obtained with a filter bank of 5 frequencies and 4 orientations. (a) Luminance channel responses, (b) Real part of chrominance channel responses, (c) Imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses}    
 \end{figure}
 
 The raw response images are organized as a matrix arrangement that follows the same structure as the Gabor family of filters. The rows in the array represent the responses to the bank's different frequencies (the frequency increases from bottom to top). The array columns represent the responses to the bank's different orientations; from left to right, $\theta$ varies between $ 0^\circ $ $180\circ$ at equidistant intervals. 
@@ -1230,7 +1135,7 @@ where $B$ is the structuring element and $\gamma_B$ is the morphological opening
 %        \label{fig:ci_gabor_energies_opn} 
 %    \end{subfigure} 
 %    	    
-%    \caption{Gabor responses after the morphological openning of the synthetic image. \captext{(a)} Luminance channel responses, \captext{(b)} Real part of chrominance channel responses, \captext{(c)} Imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses_opn}    
+%    \caption{Gabor responses after the morphological openning of the synthetic image. (a) Luminance channel responses, (b) Real part of chrominance channel responses, (c) Imaginary part of chrominance channel responses.}\label{fig:synthetic_img_gresponses_opn}    
 %\end{figure}
 
 Finally, after the morphological opening, we apply an adaptive Gaussian smoothing to calculate the Gabor energy locally. This smoothing is defined as 
@@ -1401,7 +1306,7 @@ We can see the orientability of the synthetic image in figure \ref{fig:orientabi
 \end{figure}
 
 \subsubsection{Texturability}
-The \textit{texturality} is a visual feature that joins the fundamental frequency Eq. \eqref{eq:fundamental_freq} and the maximal Gabor response Eq. \eqref{eq:max_energy}. We represent this feature in a three-channel image. We map the fundamental frequency values $\widetilde{f}$ to a diverging color map and use it as channel 2 of the composed image. TThen, the alpha channel of the fundamental frequency is given by the Gabor filter's maximal response $\widetilde{e}_{max}$. Finally, we use the input image's luminance channel $L(x,y)$ as a canvas to show the composite feature. That is,
+The \textit{texturality} is a visual feature that joins the fundamental frequency Eq. \eqref{eq:fundamental_freq} and the maximal Gabor response Eq. \eqref{eq:max_energy}. We represent this feature in a three-channel image. We map the fundamental frequency values $\widetilde{f}$ to a diverging color map and use it as channel 2 of the composed image. Then, the alpha channel of the fundamental frequency is given by the Gabor filter's maximal response $\widetilde{e}_{max}$. Finally, we use the input image's luminance channel $L(x,y)$ as a canvas to show the composite feature. That is,
 
 \begin{gather}
     \text{channel 1} = L(x,y) \\
@@ -1458,6 +1363,106 @@ Finally, looking at subfigures \ref{fig:perceptual_color1_synth} and \ref{fig:pe
                   
     \caption{Synthetic image's high-level texture features derived from the fundamental frequency.}\label{fig:colors_high_level_features_synth}    
 \end{figure}
+
+\section{State of the Art and Evaluation of Contour Detectors and Segmentation of Natural Images}\label{sec:soa_boundaries_segmentation}
+
+\subsection{Image boundaries}
+Edge detection is a fundamental problem of computer vision that has been intensively studied since the early 1970s \cite{Hueckel:JACM:1971, Fram.Deutsch:TC:1975}. The main idea behind traditional approaches to contour extraction is to model edges as discontinuities in the brightness channel of an image. This idea gave way to the creation of mask-based operators such as Sobel \cite{Sobel.Feldman:SAIL:1990}, Roberts \cite{Roberts:Thesis:1963}, Gradient \cite{Maitre:Book:2003} and Prewitt \cite{Prewitt:PPP:1970}, which quantify the presence of an edge through the convolution of a gray level image with local derivative filters. Other techniques, such as Marr and Hildreth \cite{Marr.Hildreth:PRS:1980}, define edges as the zero crossings of the Laplacian of a Gaussian (LoG). The Canny operator \cite{Canny:PAMI:1986} is one of the most popular approaches to this day within traditional methods. This operator follows the same operation principle of the previous methods, adding a non-maximum suppression stage and hysteresis thresholding. 
+
+Despite their efficiency in controlled environments or synthetic images, traditional methods suffer from identifying contours in natural images. The edges of natural images can be present at different scales, and the colors and textures of the scene can generate edges that are perceptually significant to the human eye. Ideally, a contour detection method is intended to simultaneously exploit the brightness, color, and texture properties of an image so that it can handle the boundary perimeters defined by the brightness steps and the regions with consistent color and (or) texture.
+
+One of the relatively recent strategies for identifying perceptual contours is to use the local energy response of an image. The operation principle is simple: generate features from the responses of an image produced by a family of filters at different scales and orientations. The idea has been exploited from different points of view. For example, the use of the Difference of Gaussians (DoG) and its Hilbert transform \cite{Morrone.Owens:PR:1987, Morrone.Burr.ea:RSL:1988} to generate a family of filters. Inspired by Gabor's work, this group of filters comply with the Parseval principle and generate an exact quadrature pair (even and odd symmetry cells). 
+
+The \textit{Probability-of-boundary} (Pb) detector \cite{Malik.Belongie.ea:IJCV:2001} is one of the principal exponents of using a filter bank formed by the DoG and its Hilbert transform. The contour detector only uses the brightness and texture information to obtain the Pb. The brightness information is processed following the intervening contour framework \cite{Leung.Malik:ECCV:1998}, which consists of obtaining the image's quadrature energy, also called oriented energy (OE). The texture information is analyzed using so-called textons \cite{Malik.Belongie.ea:ICCV:1999}. Since each cue (brightness and texture) has a domain of applicability, hence different units of magnitude, they introduce a gating operator based on a neighborhood's texturedness at a pixel. The operator gives, as a result, a local measure that indicates how much two nearby pixels are to belong to the same region. Later in that work, they use spectral graph theory (normalized cut algorithm \cite{JianboShi.Malik:PAMI:2000}) to segment the image into coherent texture and brightness regions. 
+
+This contemporary method, developed by the UC Berkeley research group, was the basis for many other techniques for contour detection and segmentation of natural images widely used today. Most of these works bring substantial improvements to the Pb detector. For example, the seminal papers \cite{Martin.Fowlkes.ea:NIPS:2002} and \cite{Martin.Fowlkes.ea:PAMI:2004} bring together previous works related to Pb and obtain a feature space of four image characteristics: localized OE, Brightness Gradient (BG), Color Gradient (CG), and localized Texture Gradient (TG). To cope with the difference in units of the magnitude of the cues, they use a logistic regression classifier to combine oriented energy, brightness, color, and texture. The proposed supervised method optimizes each feature's weights, formulating it as a two-class classification problem, where they learn the rules for combining cues from the ground truth data of the Berkeley Segmentation Dataset (BSDS) \cite{Martin.Fowlkes.ea:ICCV:2001}.
+
+On the other hand, \cite{Ren:ECCV:2008} showed that the Pb detector improves when using features of the image calculated at different scales. However, a better version of the Pb detector, which has dominated the state of the art scores for several years, is obtained by combining local and global contours \cite{Maire.Arbelaez.ea:CVPR:2008}. The local contours are represented by the multiscale oriented signal mPb, while the global contours are represented by the oriented signal from the spectral partition sPb. The final detector that combines both signals is the globalized Probability-of-boundary gPb, which learns the local and global part's weights through an ascending gradient, taking as reference the BSDS evaluation score.
+
+The Berkeley research group laid the foundation for contour detection and natural image segmentation, providing quantitative comparison methods. However, there are other methods in the literature that use different strategies to calculate image features and detect contours. Such methods can usefully supervise approaches, avoiding the careful hand-drawing of texture and gloss gradients. However, we can also find semi-supervised methods that replace the Pb detector to apply later a pre-processing chain similar to that applied in the Berkeley group methods.
+
+The Berkeley research group laid the foundation for contour detection and natural image segmentation, providing the database and tools for the comparison and quantitative evaluation of the different approaches. Furthermore, Pb has motivated the development of state-of-the-art methods that use different strategies to obtain image features and contour detection. Such methods can use supervised approaches, avoiding careful filter design, computation of texture and brightness gradients, and hand-crafted features. We can also find semi-supervised methods, which generally replace the Pb detector with a supervised detector to apply later a pre-processing chain similar to that applied in the Berkeley group methods to refine the detection.
+
+The set of the most popular supervised methods for contour detection, led by researchers from the University of Pasadena California and colleagues, is based on the calculation of features on channels of integrals of the image \cite{Dollar.Tu.ea:BMVC:2009}. Some examples of these integral channels are image color and gray channels, image responses to linear filters (e.g., Gabor filters, DoG), non-linear image transformations (e.g., Canny edges, gradient magnitude, hysteresis threshold), among others. The calculation of features on the integral channels follows the object detection framework of \cite{Viola.Jones:IJCV:2004}, obtaining first-order and higher-order features such as Haar-like features. Following this principle, a pool of features is obtained by randomly choosing both the integral channel and a rectangle where the features are calculated, allowing the acceleration of the computation of features and boosting learning techniques. 
+
+Some of the supervised edge detectors that use the integral channel features as input are the Boosted Energy Learning (BEL) \cite{Dollar.ZhuowenTu.ea:CVPR:2006}, which attempts to learn an edge classifier in the form of a probabilistic boosting tree from the thousands of simple features calculated in image patches. On the other hand, Sketch tokens \cite{Lim.Zitnick.ea:CVPR:2013} uses the same features as input to a random forest classifier. The peculiarity of this second method is that the classes of the classifier are the so-called sketch tokens; mid-level information patches that represent complex shapes such as joints, corners, vertical and horizontal edges, calculated from the contours of the ground truth. The Structural Edge (SE) detector \cite{Dollar.Zitnick:ICCV:2013} and its different versions \cite{Dollar.Zitnick:PAMI:2015} take these strategies to another level, learning not only the integral input features but also the output space, using structured-output decision forests. The Oriented Edge Forest (OEF) detector \cite{Hallman.Fowlkes:CVPR:2015} outperforms existing supervised methods using a decision forest that analyzes local patches and outputs probability distributions over the space of oriented edges passing through the patch. On the other hand, \cite{Kivinen.Williams.ea:PMLR:2014} propose a fully supervised method (DeepNet) that does not use the framework of the integral features; instead, it calculates complex-cell like covariance features from multiple scales and semantic levels, which depend on the squared response of a filter to the input image. The Object-Contextual Representations (OCR) \cite{Yuan.Chen.ea:arXiv:2021} learns object regions and the relation between each pixel and each object region, augmenting the representation pixels with the object-contextual representation. The Convolutional Oriented Boundaries (COB) \cite{Maninis.Pont-Tuset.ea:ECCV:2016, Maninis.Pont-Tuset.ea:PAMI:2018} produces image contours and region hierarchies starting from generic image classification. Finally, the \cite{Kelm.Rao.ea:CAIP:2019} propose the RefineContourNet, a model based on the ResNet architecture that surpases the state-of-the-art BSDS500 benchmark. 
+
+Another group of approaches to contour detection are those based on sparse local coding. Such techniques are said semi-supervised because they contain two main stages, one unsupervised and the other supervised. The first stage consists of obtaining a generic representation (without information of the contours) from the image's information in an unsupervised way. The second stage consists of transforming the sparse representation of the image into a classification task, wherein the case of contours detection is a two-classes supervised problem to label the pixels as a contour or no contour. Some renowned works under this approach are the detector proposed by \cite{Mairal.Leordeanu.ea:ECCV:2008} and the Sparse Code Gradients (SCG) detector \cite{Ren.Bo:NIPS:2012}. Both works use K-SVD as a dictionary learning algorithm and Orthogonal Matching Pursuit for efficient optimization and sparse coding of each pixel. At the end of the process, they use SVM as a linear classifier on the feature vectors resulting from the reconstruction error with each dictionary for pixel classification. The main difference between these detectors is that the SCG adopts the same scheme as the Pb detector, replacing the brightness, color, and texture gradients with sparse code gradients. Finally, the Sparse Code Transfer (SCT) detector \cite{Maire.Yu.ea:ACCV:2014} improves on the detector of \cite{Mairal.Leordeanu.ea:ECCV:2008} using a larger number of dictionaries at different scales and layers in addition to the multipath sparse coding technique, which rectifies the initial sparse codes to reconstruct the contours with an extra transfer dictionary. The main disadvantage of these semi-supervised methods is the computational time of both processes, dictionary calculation, and learning. 
+
+\subsection{Image segmentation}
+There is a fine line between contour detection and image segmentation. In this sense, the Pb contour detector has also influenced image segmentation. The Ultrametric Contour Maps (UCM) \cite{Arbelaez.Maire.ea:PR:2009} uses the gPb to define a measure of dissimilarity (ultrametric distance) between pairs of adjacent regions defined by a hierarchical segmentation operator (HSO). This technique is refined by adding a supplementary pre-processing stage using the oriented watershed transform (OWT), giving rise to the gPb-owt-ucm hierarchical segmentation method \cite{Arbelaez.Maire.ea:PR:2009}. The extensive qualitative and quantitative comparison of these techniques can be consulted in \cite{Arbelaez.Maire.ea:PAMI:2011}.
+
+The Pb contour detector has driven (directly or indirectly) 50 years of research work around perceptual contours detection in natural images and their segmentation. Like the Canny operator, the Pb operator has become a reference work. The importance of this method is that it provides a reasonable basis that considers human perception principles, using operators that have a physical sense. 
+
+\subsection{Bechmark}\label{subsec:benchmark}
+
+\subsubsection{Berkely Segmentation Image Data Set}
+The Berkely Database for Segmentation (BSDS) is one of the gold standards for segmentation results \cite{Martin.Fowlkes.ea:ICCV:2001}. The BSDS comprises images from the Corel database selected under a simple criterion: choose images of complex and natural scenes containing at least one distinguishable object. Under this criteria, selected images contain multiple cues for human segmentation, for example, low-level cues such as coherence of brightness, texture, color, and contour continuity; mid-level cues such as symmetry, convexity, and area of the regions; as well as high-level cues based on the semantics of the image objects.
+
+There are two versions of this database. The first one (BSDS300) contains 300 images, while the second (BSDS500) contains 500 images. Each image in the database contains between 5 and 11 human-made segmentations. The instruction given to the observers to naturally break the scene is simple:
+\begin{displayquote}
+Divide each image into pieces, where each piece represents a distinguished thing in the image. It is important that all of the pieces have approximately equal importance. The number of things in each image is up to you. Something between 2 and 30 should be reasonable for any of our images \cite{Martin.Fowlkes.ea:ICCV:2001}.
+\end{displayquote}
+Following these instructions, most segmentations meet the criterion of the number of segments; however, we can also find exceptions with more than 50 segmented things.
+
+Finally, both databases (BSDS300 and BSDS500) contain segmentations of gray level and color images. Since in this paper we analyze the color textures, we mainly use the BSDS500 color images with their respective segmentations to evaluate our segmentation results. 
+
+\subsubsection{Precision and Recall Scores}
+We use the human-generated segmentations of the BSDS500 as ground truth (GT), applying the precision-recall framework of \cite{Martin.Fowlkes.ea:PAMI:2004}. The precision is the fraction of detections that are true positives rather than false positives, while the recall is the fraction of true positives that are detected rather than missed. This evaluation framework is generally applied to evaluate contour detection algorithms. Therefore, applied in the image segmentation task, the framework involves evaluating the boundaries of the segmentation resulting regions, considering the detected boundaries pixels as a two-classes classification problem (contour and non-contour pixels). Under this configuration, precision is translated as the number of pixels correctly labeled as belonging to the contour class (true positives) divided by the total number of pixels labeled as contours (the sum of true positives and false positives). The recall in this context is defined as the number of true positives divided by the sum of true positives and the pixels which were not labeled as contours but should have been (false negatives). The following mathematical expressions define precision and recall.
+
+\begin{equation}\label{eq:precision_score}
+    \text{precision} = \frac{tp}{tp+fp}
+\end{equation}
+
+\begin{equation}\label{eq:recall_score}
+    \text{recall} = \frac{tp}{tp+fn}
+\end{equation}
+
+A simple metric that captures the trade-off between precision and recall is the f-measure, which is defined as the harmonic mean between the two scores.
+
+\begin{equation}\label{eq:f_score}
+    \text{F-measure} = \frac{2 \times \text{precision}\times\text{recall}}{\text{precision} + \text{recall}}
+\end{equation}
+
+In addition to these scores, the BSDS benchmark uses the following measures and tools to compare results in contour detection and image segmentation.
+
+
+\subsubsection{Optimal Dataset Scale (ODS), Optimal Image Scale (OIS)}
+
+A hierarchical segmentation method applied on an image provides a hierarchy $(H, \lambda)$, where the successive ultrametric levels $(\lambda_1, \cdots , \lambda_N )$ correspond to a series of nested segmentations $(S_1, \cdots , S_N )$. To properly evaluate it, one has to compute the score$(S_i , GT )$ for any level $\lambda_i$ of each image's hierarchy. We can then either retain the best $\lambda$-level on the overall dataset, and the corresponding score is the Optimal Dataset Scale (ODS), or retain the best level $\lambda_i$ for each image and average the best individual scores for all images, which correspond to the Optimal Image Scale (OIS). By definition, the ODS is inferior or equal to the OIS. For a gradient image, the levels $\lambda_i$ correspond to the threshold values at which the image contours are evaluated.
+
+\subsubsection{Precision-Recall curve and Average Precision (AP)}
+
+A precision-recall curve (PRC) is a graph that shows the relationship between precision (positive predictive value) in the x-axis, and recall (sensitivity), in the y-axis, for every possible cut-off. The cut-offs for a gradient image are the threshold values at which the image contours are evaluated. Every point on the PRC represents a chosen cut-off; therefore, what we can see in the graph is the precision and the recall we get when choosing a cut-off. The average precision (AP) on the full recall range is equivalent to the area under the precision-recall curve.
+
+\subsubsection{Segmentation Covering (SC)}
+
+The Segmentation Covering is a measure introduced by \cite{Arbelaez.Maire.ea:PR:2009} that we can see as the generalization of the classic overlap measure between two regions $R$ and $R'$ defined as
+\begin{equation}
+	O(R, R') = \frac{R \cap R'}{R \cup R'}
+\end{equation}
+
+The Segmentation Covering (SC) extends the overlap measure so that the covering of a segmentation $S$ by a segmentation $S'$ is defined as 
+\begin{equation}
+	SC(S' \rightarrow S) = \frac{1}{N}\sum_{R \in S} |R| \cdot \underset{R' \in S'}{\mathrm{max}} O(R, R')
+\end{equation}
+where $N$ denotes the total number of pixels in the image and $\mathcal{O}$ denotes the overlap between two regions $R$ and $R'$.
+
+In the case of a family of multiple image ground-truth segmentations $\{GT_i\}$ f, the covering of a machine segmentation $S$ is defined by first covering $S$ individually for each human segmentation $GT_i$, and then averaging over the different humans. If the machine segmentation explains all of the human data, it achieves a perfect covering score.
+
+\subsubsection{Probabilistic Rand Index (PRI)}
+The Rand Index has initially been introduced for clusterings evaluation. It operates by comparing the compatibility of assignments between pairs of points in the compared clusters. The Rand Index between a machine segmentation $S$ and a ground-truth $GT$ is the sum of the number of pixels pairs with the same labels in $S$ and $GT$, and of those with different labels in the two segmentations, divided by the total number of pixels pairs. The Probabilistic Rand Index (PRI) \cite{Unnikrishnan.Pantofaru.ea:CVPR:2005} is a variant introduced for the case when multiple ground truths are available. If we consider a set of ground-truth segmentations $\{GT_k\}$, the PRI is given by:
+\begin{equation}
+	PRI(S, \{GT_k\}) = \frac{1}{T}\sum_{i<j} [c_{ij}p_{ij} + (1-c_{ij})(1-p_{ij})]
+\end{equation}
+where $c_{ij}$ is the event the pixels $i$ and $j$ have the same label and $p_{ij}$ its probability. $T$ is the total number of pixel pairs.
+
+\subsubsection{Variation of Information(VI)}
+The Variation of Information (VI) is also a measure that has been introduced to compare clusterings \cite{Meila:LTKM:2003}. It measures the distance between two segmentations relatively to their average conditional entropies given by:
+\begin{equation}
+	VI(S, S') = H(S) + H(S') - 2I(S, S')
+\end{equation}
+where $H$ and $I$ respectively represent the entropies and mutual information between two data clusterings $S$ and $S'$. In our case, these clusterings are the test and ground-truth segmentations.
 
 
 \section{Clustering Algorithms as Segmentation Methods}
@@ -1593,7 +1598,7 @@ Within the wide range of clustering algorithms that exist in the literature \cit
 %and \ref{fig:pheasant_clustering_method_v_colorspace}
 Figure \ref{fig:lynx_clustering_method_v_colorspace} show the segmentation results of two BSDS500 images. In both cases, the images contain wild animals in their natural environment, which implies that the color and texture of the fur/feathers create a mimicry that helps the animals to blend in with the scene. Animal mimicry makes segmentation a challenging problem. Despite this, we see how some configurations of color space and clustering algorithms manage to classify the pixels based on the perceptual information of color and texture encoded on the Gabor features. Particularly in these two segmentation examples, we could say that the color space that best represents the color and texture information of the image is the HSL, while the clustering method that best uses the multi-spectral features is the Gaussian mixture. 
 
-For the segmentation results shown in Figures \ref{fig:lynx_clustering_method_v_colorspace} and \ref{fig:pheasant_clustering_method_v_colorspace}, we use $k = 4$ as the target number of clusters to find in the image. In addition, for visualization purposes, we display the resulting clusters with the mean color of the pixels of the original image within the segmentation regions. 
+For the segmentation results shown in Fig. \ref{fig:lynx_clustering_method_v_colorspace}, we use $k = 4$ as the target number of clusters to find in the image. In addition, for visualization purposes, we display the resulting clusters with the mean color of the pixels of the original image within the segmentation regions. 
 
 \begin{figure*}[!t]
          
@@ -1901,8 +1906,41 @@ The segmentation results are obtained by setting $k = 4$ for all images. Figure 
 In this section, we develop the methodology to obtain a perceptual gradient on an image graph. Such an image gradient is said perceptual as it is based on the multispectral decomposition of an image using Gabor filters. We use EMD as a measure of similarity between the graph's nodes to define the edges' weight. Specifications and adaptations of the EMD are also developed in this section. Subsequently, we use the resulting gradients to segment the image using well-known state-of-the-art techniques.  
 
 \subsection{Image as a Graph}
+We use the graph theory to represent images as connected structures for modeling pairwise relations between objects. We explore mainly two types of structures regarding the support: Pixel- and Region-based graph
 
-\subsubsection{Earth Mover's Distance for Non-normalized Distributions}
+\subsubsection{Pixel-based graph representation}
+
+Considering a digital image as a 2-d grid of pixels, where the intensity (or color) values are mapped to the spatial coordinates $(x, y)$, we can represent all the pixels as a dense graph. In the graph theory, $\mathcal{G}=(\mathsf{V}, \mathsf{E})$ is a graph where each node $\mathsf{v}_i \in \mathsf{V}$ corresponds to a pixel in the image, and the edges $\mathsf{e} \in \mathsf{E}$ the link between the image's pixels.
+
+There are several strategies to link the nodes of a graph. The types of graphs that we can form are a function of such linking strategies. For example, the complete graph connects each pair of different nodes with a single edge. The epsilon-graph connects a pair of nodes if they are within an epsilon distance. The k-nearest neighbors graph (knn-graph) connects a central node to another node only if the distance between them is among the k smallest distances from the central node to other nodes. Lastly, the adjacency graph connects only a pair of nodes if they are neighbors or adjacent. At a pixel level, this last graph is referred to as a  \textit{Pixel Adjacency Graph} (PAG).
+
+We can define the adjacency level of the pixels to generate a specific pixel-based graph. In our applications, we mainly use the 4-neighbor adjacency system (4nn). This configuration is illustrated in figure \ref{fig:pixel_adjacency_graph}.
+
+The representation of an image as a graph opens the possibility of new methods for data processing; however, a recurring problem is the need to satisfy the compromise between algorithmic complexity and precision. In most algorithms, complexity is a function of the number of nodes and edges in the graph, so the adjacency system plays an essential role in the speed of the methods applied to an image graph. One way to reduce the number of nodes (and consequently the number of edges) is to use graphs on the image's elements of greater size.
+
+\subsubsection{Region-based graph representation}
+
+To build this type of graph, we must first separate the image into regions, preferably into regions that are coherent with the image's perceptual information. Subsequently, the graph nodes represent the image regions while the graph edges follow the same strategies described above to connect the regions. The primary type of graph that we consider in this work is the \textit{Region Adjacency Graph }(RAG). This configuration is illustrated in figure \ref{fig:region_adjacency_graph}.
+
+Pixels are the smallest elements in the image. The grouping of these elements into coherent regions generates the so-called superpixels. In the literature, can find different algorithms for the generation of image superpixel that varies on the implementation and performance \cite{Wang.Liu.ea:SP:2017}. In this work, we choose the SLIC algorithm \cite{Stutz.Hermans.ea:CVIU:2018} to generate the image superpixels. This method is one of the most competent in terms of customization and calculation time. 
+
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.24\textwidth}
+        \includegraphics[width=\textwidth]{pixel_adjacency_graph}
+        \caption{}
+        \label{fig:pixel_adjacency_graph} 
+    \end{subfigure}         
+    \begin{subfigure}[b]{0.24\textwidth}
+    	\includegraphics[width=\textwidth]{region_adjacency_graph}
+        \caption{}
+        \label{fig:region_adjacency_graph} 
+    \end{subfigure}  
+        	    
+    \caption{Representation of an image as a graph: (a) Pixel Adjacency Graph (4-neighbor adjacency), (b) Region Adjacency Graph.}\label{fig:image_a_graph} 
+\end{figure}
+
+\subsection{Earth Mover's Distance for Non-normalized Distributions}
 The EMD has shown its usefulness as a true metric for measuring the similarity between distributions \cite{Bazan.Dokladal.ea:BMVC:2019}. In image retrieval systems based on color information, the EMD can measure tiny changes in the normalized color distributions of images. On the other hand, with the texture patches, the EMD can capture, reflect and measure the importance of the logarithmic (frequency) and polar (orientation) axis of the texture signature. In this paper we use the EMD to measure the similarity between two elements of an image: pixels or superpixels. By measuring the similarity of elements in the Gabor-filter-based feature space, we locally measure changes in color and texture in the image. 
 
 The EMD \cite{Rubner.Tomasi.ea:IJCV:2000}, as used to measure color and texture distributions in \cite{Bazan.Dokladal.ea:BMVC:2019}, is a true metric only when used with normalized distributions (histograms or signatures), i.e., distributions with total mass equal to one. This fact has no impact when the distributions represent global information of an image (color or texture). However, the distributions of the image elements (pixels or superpixels) contain only a portion of the information; for example, in the case of our feature space, Gabor's energy. 
@@ -1923,10 +1961,10 @@ such that
 \end{itemize}
 where $f_{ij}$ denotes the amount transported and $c_{ij}$ denotes the transport cost from the $i$th supplier in $P$ to the $j$th consumer in $Q$. 
 
-\subsubsection{Graph Image Gradients}
-As we described earlier, we can use pixels or superpixels as support to represent an image as a graph. Figure \ref{fig:computational_support} shows a natural-color image, its superpixels obtained with the SLIC technique (approximately 2500 regions), and the region adjacency graph obtained on the superpixels. In this sense, each node of the graph is positioned at the centroid of each superpixel in the image. This strategy allows reducing the EMD calculation time between nodes of the graph, with the compromise. The pixel adjacency graph of the image is not displayed (see Fig. \ref{fig:pag_example} instead as a PAG reference); however, we used a 4 neighboring node adjacency system (4nn) for its creation.
+\subsection{Graph Image Gradients}
+As we described earlier, we can use pixels or superpixels as support to represent an image as a graph. In this sense, each node of the graph corresponds to a pixel of the image or, to the centroid of each image superpixel. Since the number of edges increases with the number of nodes, the strategy of calculating the gradient on a region-based graph allows reducing the EMD computation time for the set of edges of an image. This action generates a tradeoff between the final gradient and the regions generated by the SLIC algorithm. We compute the gradients on both supports; for the PAG, we use a four neighboring node adjacency system (4nn), whereas we set the SLIC algorithm to generate 2500 superpixels for the RAG. 
 
-The weight of the edges between nodes of both computational supports is given by the EMD for non-normalized distributions. 
+The weight of the edges between nodes of both computational supports (pixels and superpixels)is given by the EMD for non-normalized distributions. 
 \begin{equation}
 	\mathsf{e}_{ij} \leftarrow \omega(\mathsf{v}_i, \mathsf{v}_j) = d_{\widehat{EMD}}(\widetilde{e}(i), \widetilde{e}(j))
 \end{equation}
@@ -1973,9 +2011,9 @@ The perceptual gradients obtained with EMD contain the necessary structure to se
 
 This image segmentation method consists of obtaining the minimum spanning tree (MTS) of the total edge-weighted graph (with normalized values between 0 and 1) and then perform a cut over the graph. Since in the MST, there is only a single path that joins all the nodes of the graph, we can make one or more graph cuts to separate the image into regions. We define the edges that are removed by the cut setting a threshold value over the weights of the MST edges. This threshold value choice is not always obvious, and this value may differ for each image.
 
-We propose obtaining a threshold value by fitting a probability density function to the distribution of the MST edges values. We hypothesize that the areas with the same color and (or) texture information behave as flat areas in the generated feature space; therefore, the edges that connect these areas have a considerable EMD value and behave as outliers within the probability function. We choose the logarithmic distribution as the density function to fit. The threshold value is defined then by the log distribution point where the edge weights reach the quantile of order $q = 0.9$. Under this setting, we cut all the MST edges above the quantile and keep $90\%$ of the graph's edges. The segmentation of the image is given by the connected components of the resulting graph.
+We propose obtaining a threshold value by fitting a probability density function to the distribution of the MST edges values. We hypothesize that the areas with the same color and (or) texture information behave as flat areas in the generated feature space; therefore, the edges that connect these areas have a considerable EMD value and behave as outliers within the probability function. We choose the logarithmic distribution as the density function to fit. The threshold value is defined then by the log distribution point where the edge weights reach the quantile of order $q = 0.9$. Under this setting, we cut all the MST edges above the quantile and keep $90\%$ of the graph's edges. The segmentation of the image is given by the connected components of the resulting graph. The resulting segmentation is shown in subfigure \ref{fig:graphcut_segmentation_result}.
 
-Taking the example of the polar bear image, figure \ref{fig:graphcut_segmentation_technique}  shows the MST graph of the image and the weight distribution of the MST edges (black bars), and the logarithmic distribution (red line) that matches the weighted histogram. The red arrow on the plot shows the threshold value for cutting the graph. The resulting segmentation is shown in subfigure \ref{fig:graphcut_segmentation_result}.
+%Taking the example of the polar bear image, figure \ref{fig:graphcut_segmentation_technique}  shows the MST graph of the image and the weight distribution of the MST edges (black bars), and the logarithmic distribution (red line) that matches the weighted histogram. The red arrow on the plot shows the threshold value for cutting the graph. 
 
 An advantage of this method is the computational speed to obtain an image sepgmentation. Furthermore, selecting the threshold value for the graph cut is independent of the user and self-adapting for each image. However, the choice of the quantile $q$ is important; a very low value leads to cutting edges within flat areas of color and (or) texture, generating an over-segmentation of the image; on the other hand, a high threshold value leads to preserving most of the edges so that most of the image regions remain connected.
 
@@ -1999,11 +2037,11 @@ Detailing the stages of spectral clustering, we obtain the affinity matrix $A = 
 		0 \quad \text{elsewhere}
 	\end{cases}	 
 \end{equation}
-where $\omega_{ij}$ is the measure of distance between nodes of the graph (given by the EMD between non-normalized distributions); $\sigma(W)$ is the total standard deviation of the weight matrix $W$ that serves a global optimization parameter for the affinity matrix computation and; $\alpha$ is a human-defined constant which controls how rapidly the affinity $A_{ij}$ falls off with the distance between $i$ and $j$.
+where $\omega_{ij}$ is the measure of distance between nodes of the graph (given by the EMD between non-normalized distributions); $\sigma(W)$ is the total standard deviation of the weight matrix $W$ that serves a global optimization parameter for the affinity matrix computation and; $\alpha$ is a human-defined constant which controls how rapidly the affinity $A_{ij}$ falls off with the distance between elements $i$ and $j$.
 
-The spectral decomposition is done using the Laplacian matrix, which depends on the affinity matrix $A$ and the matrix of degree $D$. We follow the algorithm of \cite{Ng.Jordan.ea:NIPS:2001}, which proposes to use the normalized Laplacian matrix $L = D^{-1/2} A D^{-1/2}$. This Laplacian matrix form is known as the non-normalized one. Once the k largest eigenvectors of $ L $ have been found and normalized, we apply the k-means algorithm on the data points of this reduced space of the graph and assign each node to a cluster.
+The spectral decomposition is done using the Laplacian matrix, which depends on the affinity matrix $A$ and the matrix of degree $D$. We follow the algorithm of \cite{Ng.Jordan.ea:NIPS:2001}, which proposes to use the normalized Laplacian matrix $L = D^{-1/2} A D^{-1/2}$. This Laplacian matrix form is known as the non-normalized one. Once the k largest eigenvectors of $ L $ have been found and normalized, we apply the k-means algorithm on the data points of this reduced space of the graph and assign each node to a cluster. Subfigure \ref{fig:spectral_clustering_segm_result} shows the polar bear segmentation result using $k = \mathrm{min}(\mathcal{S})$ (which for this image $k =5$) and $\alpha = 6$.
 
-Figure \ref{fig:spectral_clustering_process} shows the similarity graph constructed from the EMD distances between texture signatures. Since the similarity function $s(i, j)$ is inverse to the distance $\omega (i, j)$ between nodes, we see that the edges' value tends to $0$ (black edges) when the regions are dissimilar, and when the regions are similar, the edges' value tends to $1$ (white edges). Subfigure \ref{fig:spectral_clustering_segm_result} shows the polar bear segmentation result using $k = \mathrm{min}(\mathcal{S})$ (which for this image $k =5$) and $\alpha = 6$.
+%Figure \ref{fig:spectral_clustering_process} shows the similarity graph constructed from the EMD distances between texture signatures. Since the similarity function $s(i, j)$ is inverse to the distance $\omega (i, j)$ between nodes, we see that the edges' value tends to $0$ (black edges) when the regions are dissimilar, and when the regions are similar, the edges' value tends to $1$ (white edges). 
 
 \subsubsection{Normalized graph-cut}
 The Normalized cuts technique is a variation of the spectral clustering technique to cluster graphs. Initially proposed by \cite{JianboShi.Malik:PAMI:2000}, this method performs the same spectral clustering steps described above with some minor differences. As for the affinity matrix, it remains the same. However, the Laplacian matrix here is given as
@@ -2013,7 +2051,7 @@ so the eigendecomposition problem is different as well.
 Furthermore, the normalized cut is a recursive method that finds a bipartition of the graph to maximize $Ncut$. This process is repeated considering the stability of the cut and if $Ncut$ is below the preset value. This condition implies that, unlike spectral clustering, we do not need to introduce a specific number of regions $k$ to find in the image. We find more details about this method in \cite{JianboShi.Malik:PAMI:2000}. We show the segmentation result of the polar bear image using the normalized cut method in figure \ref{fig:norm_cut_segm_result}. 
 
 \subsubsection{Comparison of the Different Graph-based Segmentation Methods}
-We evaluate the quality of the segmentation given by the three segmentation methods based on graphs: MST threshold graph-cut, Spectral clustering, and Normalized graph-cut. For this, we use the Berkeley image database test set, and the F-measure obtained from the precision and recall scores described in section \ref{sec:}. 
+We evaluate the quality of the segmentation given by the three segmentation methods based on graphs: MST threshold graph-cut, Spectral clustering, and Normalized graph-cut. For this, we use the Berkeley image database test set, and the F-measure obtained from the precision and recall scores described in subsection \ref{subsec:benchmark}. 
 
 In figure \ref{fig:boxplot_score_methods}, we show the resulting scores applying the segmentation methods to graphs built in different feature spaces. In particular, we vary the input color space to construct the luminance-chrominance representation of the image.
 
@@ -2026,16 +2064,19 @@ In figure \ref{fig:boxplot_score_methods}, we show the resulting scores applying
     \begin{subfigure}[b]{0.2\textwidth}
         \includegraphics[width=\textwidth]{100007_graphcut_result}
         \caption{Threshold graph-cut}
+        \label{fig:graphcut_segmentation_result}
     \end{subfigure}\hfill
     \begin{subfigure}[b]{0.2\textwidth}
     	\centering
     	\includegraphics[width=\textwidth]{100007_spec_result}
         \caption{Spectral clustering}
+        \label{fig:spectral_clustering_segm_result}
     \end{subfigure}\hfill 
     \begin{subfigure}[b]{0.2\textwidth}
     	\centering
         \includegraphics[width=\textwidth]{100007_ncut_result}
         \caption{Normalized graph-cut}
+        \label{fig:norm_cut_segm_result}
     \end{subfigure} 
         	    
     \caption{Graph-based segmentation results.}\label{fig:graph_based_segmentations}    
